@@ -1,0 +1,123 @@
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2014 Essential Dots d.o.o. Belgrade
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
+
+/**
+ * fallback element logic
+ */
+
+.hijax-js-off .hijax-js-fallback > .hijax-content {
+	visibility: visible;
+}
+
+.hijax-js-on .hijax-js-fallback > .hijax-content {
+	visibility: hidden;
+}
+
+/**
+ * Emulate display none
+ */
+.hijax-js-on .hijax-display-none {
+	display: block;
+	visibility: hidden;
+	overflow: hidden;
+	height: 1px;
+}
+
+/**
+ * js conditional element logic
+ */
+
+.hijax-js-off .hijax-js-conditional > .hijax-content {
+	visibility: visible;
+}
+
+.hijax-js-off .hijax-js-conditional .hijax-content-else {
+	display: none;
+}
+
+.hijax-js-on .hijax-js-conditional > .hijax-content {
+	visibility: hidden;
+	display: block;
+}
+
+.hijax-js-on .hijax-js-conditional .hijax-content-else {
+	display: none;
+}
+
+/**
+ * general element
+ */
+
+.hijax-element {
+	/* overflow: hidden; */
+	position: relative;
+	/* overflow: visible !important; */
+}
+
+.hijax-element-forced-visible-overflow {
+	overflow: visible !important;
+}
+
+.hijax-loading {
+	display: block; 
+	background: white url(../Images/loader.gif) no-repeat 50% 50%; 
+	height: 100%; 
+	display: none;
+	position: absolute; 
+	width: 100%; 
+	left: 0px; 
+	top: 0px; 
+	z-index: 10000;
+	filter: alpha(opacity=50);
+	-moz-opacity:0.5; 
+	opacity:0.5;
+}
+
+.hijax-error {
+	border: 1px solid #ef0104; 
+	background-color: #ffeae9;
+	color: #ef0104;
+	margin: 10px 0 !important;
+	font-weight: bold;
+	padding: 12px;
+	filter: alpha(opacity=0);
+	-moz-opacity:0.0; 
+	opacity:0.0;
+}
+
+
+.hijax-js-off .hijax-displayed-with-js-only {
+	display: none;
+}
+
+.hijax-js-on .hijax-displayed-without-js-only {
+	display: none;
+}
+
+.hijax-js-off .hijax-visible-with-js-only {
+	visibility: hidden;
+}
+
+.hijax-js-on .hijax-visible-without-js-only {
+	visibility: hidden;
+}

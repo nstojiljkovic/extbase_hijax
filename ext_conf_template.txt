@@ -1,0 +1,2 @@
+	# cat=basic; type=string; label=Path to HTML to PDF binary executable file (with optional parameters)
+pathToPDFGenFile = wkhtmltopdf - -

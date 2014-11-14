@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<head>
+    <meta charset='utf-8'>
+    <title>Local storage target page</title>
+    <!--[if lt IE 8]><script src='./typo3conf/ext/extbase_hijax/Resources/Public/JavaScript/json2.js'></script><![endif]-->
+    <script>
+        document.write('<script src=' +
+           ('__proto__' in {} ? './typo3conf/ext/extbase_hijax/Resources/Public/JavaScript/zepto.' : './typo3conf/ext/extbase_hijax/Resources/Public/JavaScript/jquery.') +
+           'js><\/script>')
+    </script>
+</head>
+<body>
+<script>
+    var EXTBASE_HIJAX = {forceHTTPSLocalStorage: true};
+</script>
+<script type="text/javascript">//<![CDATA[
+if (typeof jQuery === 'undefined') {
+    jQuery = $; // Zepto-jQuery compatibility
+}
+if (typeof Zepto === 'undefined') {
+    Zepto = $; // Zepto-jQuery compatibility
+}
+var messageListener = function(event) {
+    // Domain restriction (to not leak variables to any page..)
+    if (event.origin == 'http://' + window.location.hostname ||
+        event.origin == 'https://' + window.location.hostname) {
+        var data = JSON.parse(event.data);
+
+        if ('setItem' in data) {
+            $.hStorage.set(data.setItem, data.value);
+        } else if ('getItem' in data) {
+            var gotItem = $.hStorage.get(data.getItem);
+            var obj = '#localStorage#' + data.identifier + (gotItem === null ? 'null#' : '#' + JSON.stringify(gotItem));
+            if (typeof event.source.postMessage === "function" || typeof event.source.postMessage === "object") {
+                event.source.postMessage(obj, event.origin);
+            } else {
+                event.source.contentWindow.postMessage(obj, event.origin);
+            }
+        } else if ('removeItem' in data) {
+            $.hStorage.deleteKey(data.removeItem);
+            //localStorage.removeItem(data.removeItem);
+        }
+    }
+};
+// Script at https://
+if (!window.addEventListener) {
+    window.attachEvent('onmessage', messageListener);
+} else {
+    window.addEventListener('message', messageListener, false);
+}
+//]]></script>
+<script src='./typo3conf/ext/extbase_hijax/Resources/Public/JavaScript/hijax.localStorage.js'></script>
+</body>
+</html>

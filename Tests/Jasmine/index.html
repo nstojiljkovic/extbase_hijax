@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--><html class='no-js' lang='en'><!--<![endif]-->
+<head>
+    <meta charset='utf-8'>
+    <meta content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0' name='viewport'>
+    <title>Extbase hijax jasmine test suite</title>
+    <link href='../../Resources/Public/CSS/hijax.css' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="lib/jasmine-1.3.1/jasmine.css">
+    <meta content='mundipharma website' data-default-location-uid='1' data-location-uid='0' name='application-name'>
+    <!--[if lt IE 8]><script src='../../Resources/Public/JavaScript/json2.js'></script><![endif]-->
+    <script>
+        document.write('<script src=' +
+           ('__proto__' in {} ? '../../Resources/Public/JavaScript/zepto.' : '../../Resources/Public/JavaScript/jquery.') +
+           'js><\/script>')
+    </script>
+    <script type="text/javascript" src="lib/jasmine-1.3.1/jasmine.js"></script>
+    <script type="text/javascript" src="lib/jasmine-1.3.1/jasmine-html.js"></script>
+    <script type="text/javascript" src="spec/localStorage.js"></script>
+</head>
+<body>
+<script>
+    var EXTBASE_HIJAX = {initElement: [], forceHTTPSLocalStorage: true, unloadElement: [], onLoadElement: [], beforeLoadElement: [], bodyClass: 'hijax-js-off', loadingClass: 'hijax-loading', fallbackClass: 'hijax-js-fallback', contentClass: 'hijax-content', errorMessage: "Oops... An error occurred.", url: "/index.php", sys_language_uid: '0'}; try { var body = document.getElementsByTagName("body")[0]; body.className = body.className + ' hijax-js-on'; body.className = body.className.replace(new RegExp('\\b' + EXTBASE_HIJAX.bodyClass + '\\b', 'g'), ''); } catch(err) {}
+</script>
+
+<script>
+    if (typeof jQuery === 'undefined') {
+        jQuery = $; // Zepto-jQuery compatibility
+    }
+    if (typeof Zepto === 'undefined') {
+        Zepto = $; // Zepto-jQuery compatibility
+    }
+
+    (function() {
+        var jasmineEnv = jasmine.getEnv();
+        jasmineEnv.updateInterval = 1000;
+
+        var htmlReporter = new jasmine.HtmlReporter();
+
+        jasmineEnv.addReporter(htmlReporter);
+
+        jasmineEnv.specFilter = function(spec) {
+            return htmlReporter.specFilter(spec);
+        };
+
+        var currentWindowOnload = window.onload;
+
+        window.onload = function() {
+            if (currentWindowOnload) {
+                currentWindowOnload();
+            }
+            execJasmine();
+        };
+
+        function execJasmine() {
+            jasmineEnv.execute();
+        }
+
+    })();
+</script>
+<script src='../../Resources/Public/JavaScript/hijax.js'></script>
+<script src='../../Resources/Public/JavaScript/hijax.localStorage.js'></script>
+</body>
+</html>

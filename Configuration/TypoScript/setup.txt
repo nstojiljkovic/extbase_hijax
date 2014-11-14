@@ -1,0 +1,85 @@
+	config.tx_extbase {
+		persistence{
+				# we do NOT want the extbase built-in automatic cache clearing
+			enableAutomaticCacheClearing = 0
+		}
+		settings {
+			cacheInvalidationLevel = consistent
+			absRefPrefix < config.absRefPrefix
+			extbaseHijaxDefaultCacheExpiryPeriod = 3600
+		}
+	}
+
+	plugin.tx_extbase_hijax.settings {
+
+	}
+
+	page {
+		includeJSlibs {
+			extbase_hijax = EXT:extbase_hijax/Resources/Public/JavaScript/hijax.js
+		}
+
+		includeCSS {
+			extbase_hijax = EXT:extbase_hijax/Resources/Public/CSS/hijax.css
+		}
+	}
+
+	config.extbase_hijax {
+			# start of FE
+		sofe = COA
+		sofe {
+			10 = LOAD_REGISTER
+			10.currentUrl.cObject = TEXT
+			10.currentUrl.cObject {
+				typolink {
+					parameter.data = TSFE:id
+					#addQueryString = 1
+					#addQueryString.exclude = id
+					returnLast = url
+				}
+			}
+
+			20 = TEXT
+			20.wrap (
+				<script type="text/javascript">//<![CDATA[
+					var EXTBASE_HIJAX = {initElement: [], forceHTTPSLocalStorage: true, unloadElement: [], onLoadElement: [], beforeLoadElement: [], bodyClass: 'hijax-js-off', loadingClass: 'hijax-loading', fallbackClass: 'hijax-js-fallback', contentClass: 'hijax-content'
+			)
+
+			30 = TEXT
+			30.data = LLL:EXT:extbase_hijax/Resources/Private/Language/locallang.xml:server-error
+			30.htmlSpecialChars = 1
+			30.wrap = , errorMessage: "|"
+
+			40 = TEXT
+			40.data = register:currentUrl
+			40.wrap = , url: '|'
+
+			50 = TEXT
+			50.data = TSFE:sys_language_uid
+			50.intval = 1
+			50.wrap = , sys_language_uid: '|'
+
+			60 = TEXT
+			60.value (
+					};
+					try {
+						var body = document.getElementsByTagName("body")[0];
+						body.className = body.className + ' hijax-js-on';
+						body.className = body.className.replace(new RegExp('\\\\b' + EXTBASE_HIJAX.bodyClass + '\\\\b', 'g'), '');
+					} catch(err) {}
+				//]]></script>
+			)
+
+			70 = RESTORE_REGISTER
+		}
+
+			# end of FE
+		/*
+		eofe = COA
+		eofe {
+		}
+		*/
+		includeEofe = 0
+		includeSofe = 1
+		bodyClass = hijax-js-off
+	}	

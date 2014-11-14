@@ -1,0 +1,20 @@
+config.tx_extbase {
+	objects {
+		TYPO3\CMS\Extbase\Persistence\QueryInterface {
+			className = EssentialDots\ExtbaseHijax\Persistence\Query
+		}
+		TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface {
+			className = EssentialDots\ExtbaseHijax\Persistence\Storage\Typo3DbBackend
+		}
+		TYPO3\CMS\Extbase\Mvc\Dispatcher {
+			className = EssentialDots\ExtbaseHijax\MVC\Dispatcher
+		}
+		TYPO3\CMS\Extbase\Persistence\Generic\BackendInterface {
+			className = EssentialDots\ExtbaseHijax\Persistence\Backend
+		}
+	}
+
+	namespaces {
+		h = EssentialDots\ExtbaseHijax\ViewHelpers
+	}
+}

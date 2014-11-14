@@ -1,0 +1,4 @@
+	plugin.tx_extbase_hijax.settings {
+
+	}
+	
