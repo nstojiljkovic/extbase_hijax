@@ -24,6 +24,8 @@ namespace EssentialDots\ExtbaseHijax\Utility\Ajax;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use EssentialDots\ExtbaseHijax\Event\Listener;
+use EssentialDots\ExtbaseHijax\MVC\Controller\ArgumentsManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * An AJAX dispatcher.
@@ -269,6 +271,10 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 			error_log($e->getMessage());
 			$responses = array('success' => FALSE, 'code' => $e->getCode());
 		}
+
+		/** @var ArgumentsManager $argumentsManager */
+		$argumentsManager = GeneralUtility::makeInstance('EssentialDots\\ExtbaseHijax\\MVC\\Controller\\ArgumentsManager');
+		$responses['validation-errors'] = $argumentsManager->hasErrors();
 
 		if (!$preventDirectOutput && $responses['original'][0]['format'] != 'html' && is_string($responses['original'][0]['response'])) {
 			foreach ($responses['original'][0]['headers'] as $header) {
