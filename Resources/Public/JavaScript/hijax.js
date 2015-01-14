@@ -247,7 +247,7 @@
 		return( arrData );
 	};
 
-	var _ajaxRequest = function (requests, stateUrl) {
+	var _ajaxRequest = function (requests, stateUrl, successCallback, errorCallback) {
 		var pendingElements = [];
 		var processedRequests = [];
 		var fields = [];
@@ -282,64 +282,59 @@
 
 		$data = $.hijaxParam({r: processedRequests, evts: eventsToListen})+'&'+$.hijaxParam(fields)+'&eID=extbase_hijax_dispatcher&L='+EXTBASE_HIJAX.sys_language_uid;
 
-		var successCallback = function(data, textStatus, jqXHR) {
-			if (data['redirect'] && data['redirect'].url) {
-				_redirectToURL(data['redirect'].url);
-			} else {
-				if (!data['validation-errors'] && typeof window.History != 'undefined' && window.History.enabled && typeof stateUrl != 'undefined' && stateUrl) {
-					History.pushState({hijax: true, custom: true, tstamp: new Date().getTime()}, null, stateUrl);
-				}
-
-				$.each(EXTBASE_HIJAX.beforeLoadElement, function(i, f) {
-					try {
-						eval(f);
-					} catch (err) {
+		if (typeof successCallback !== 'function') {
+			successCallback = function (data, textStatus, jqXHR) {
+				if (data['redirect'] && data['redirect'].url) {
+					_redirectToURL(data['redirect'].url);
+				} else {
+					if (!data['validation-errors'] && typeof window.History != 'undefined' && window.History.enabled && typeof stateUrl != 'undefined' && stateUrl) {
+						History.pushState({hijax: true, custom: true, tstamp: new Date().getTime()}, null, stateUrl);
 					}
-				});
 
-				$.each(pendingElements, function(i, pendingElement) {
-					try {
-						var target = pendingElement['target'];
-						var loaders = pendingElement['loaders'];
-						$(target).hideHijaxLoader(loaders);
-					} catch (err) {
-					}
-				});
+					$.each(EXTBASE_HIJAX.beforeLoadElement, function (i, f) {
+						try {
+							eval(f);
+						} catch (err) {
+						}
+					});
 
-				$.each(data['original'], function(i, r) {
-					var element = $('#'+r['id']);
-					if (element) {
-						element.loadHijaxData(r['response'], r['preventMarkupUpdate']);
-					}
-				});
+					$.each(pendingElements, function (i, pendingElement) {
+						try {
+							var target = pendingElement['target'];
+							var loaders = pendingElement['loaders'];
+							$(target).hideHijaxLoader(loaders);
+						} catch (err) {
+						}
+					});
 
-				$.each(data['affected'], function(i, r) {
-					$.each(listeners[r['id']], function(i, element) {
-						element = $(element);
+					$.each(data['original'], function (i, r) {
+						var element = $('#' + r['id']);
 						if (element) {
 							element.loadHijaxData(r['response'], r['preventMarkupUpdate']);
 						}
 					});
-				});
 
-				$.each(EXTBASE_HIJAX.onLoadElement, function(i, f) {
-					try {
-						eval(f);
-					} catch (err) {
-					}
-				});
-			}
-		};
+					$.each(data['affected'], function (i, r) {
+						$.each(listeners[r['id']], function (i, element) {
+							element = $(element);
+							if (element) {
+								element.loadHijaxData(r['response'], r['preventMarkupUpdate']);
+							}
+						});
+					});
 
-		var ajaxRequest = $.ajax({
-			url: EXTBASE_HIJAX.url,
-			type: "POST",
-			//crossDomain: true,
-			data: $data,
-			dataType: "json",
-			//pendingElements: pendingElements,
-			success: successCallback,
-			error: function(jqXHR, textStatus, errorThrown) {
+					$.each(EXTBASE_HIJAX.onLoadElement, function (i, f) {
+						try {
+							eval(f);
+						} catch (err) {
+						}
+					});
+				}
+			};
+		}
+
+		if (typeof errorCallback !== 'function') {
+			errorCallback = function(jqXHR, textStatus, errorThrown) {
 				error = true;
 				if (jqXHR.status == 401) {
 					try {
@@ -362,7 +357,19 @@
 				} else {
 					successCallback(data, textStatus, jqXHR);
 				}
-			}
+			};
+		}
+
+		var ajaxRequest = $.ajax({
+			url: EXTBASE_HIJAX.url,
+			type: "POST",
+			//crossDomain: true,
+			data: $data,
+			fields: fields,
+			dataType: "json",
+			//pendingElements: pendingElements,
+			success: successCallback,
+			error: errorCallback
 		});
 	};
 
@@ -1085,6 +1092,41 @@
 
 		// Return the resulting serialization
 		return s.join( "&" ).replace( r20, "+" );
+	};
+
+	$.fn.submitFormWithHijax = function(options) {
+		var $this = $(this);
+		if ($this.length !== 1) {
+			return this;
+		}
+
+		options = options || {};
+		var requests = [];
+		var target = $(this).parents('.hijax-element[data-hijax-listener-id="'+$(this).attr('data-hijax-settings')+'"]');
+		var loaders = null;
+		var fields = $(this).formToArray();
+		var pluginNameSpace = $(this).attr('data-hijax-namespace');
+
+		var el = {
+			id: $(this).attr('id'),
+			extension: $(this).attr('data-hijax-extension'),
+			plugin: $(this).attr('data-hijax-plugin'),
+			controller: $(this).attr('data-hijax-controller'),
+			action: $(this).attr('data-hijax-action'),
+			arguments: $(this).attr('data-hijax-arguments'),
+			settingsHash: $(this).attr('data-hijax-settings'),
+			target: target,
+			loaders: loaders,
+			data: fields,
+			tsSource: '',
+			pluginNameSpace: pluginNameSpace
+		};
+
+		requests.push(el);
+
+		_ajaxRequest(requests, $(this).attr('action'), options['success'], options['error']);
+
+		return this;
 	};
 
 
