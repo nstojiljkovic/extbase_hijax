@@ -20,7 +20,6 @@ $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['initFEuser'][] = 'Es
 );
 
 $TYPO3_CONF_VARS['FE']['eID_include']['extbase_hijax_dispatcher'] = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY).'Resources/Private/Eid/dispatcher.php';
-$TYPO3_CONF_VARS['FE']['eID_include']['extbase_hijax_thumb'] = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY).'Resources/Private/Eid/thumb.php';
 
 if (!$TYPO3_CONF_VARS['SYS']['extbase_hijax']['lockingMode']) {
 	$TYPO3_CONF_VARS['SYS']['extbase_hijax']['lockingMode'] = 'flock';
@@ -43,15 +42,6 @@ if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations
 
 if (!isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['extbase_hijax_storage']['backend'])) {
 	$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['extbase_hijax_storage']['backend'] = 'TYPO3\\CMS\\Core\\Cache\\Backend\\FileBackend';
-}
-
-// Settings/serialized storage
-if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['extbase_hijax_img_storage'])) {
-	$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['extbase_hijax_img_storage'] = array();
-}
-
-if (!isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['extbase_hijax_img_storage']['backend'])) {
-	$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['extbase_hijax_img_storage']['backend'] = 'TYPO3\\CMS\\Core\\Cache\\Backend\\FileBackend';
 }
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] =

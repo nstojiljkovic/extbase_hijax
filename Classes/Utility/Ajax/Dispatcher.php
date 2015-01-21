@@ -189,14 +189,6 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 					$request = $listener->getRequest();
 					$bootstrap->cObj = $listener->getContentObject();
 					$this->checkAllowedControllerActions($configuration, $r);
-				} elseif (\EssentialDots\ExtbaseHijax\Utility\Extension::isAllowedHijaxAction($r['extension'], $r['controller'], $r['action'], $r['vendor'])) {
-					// we do not want to cache this request
-					$allowCaching = FALSE;
-					$configuration['extensionName'] = $r['extension'];
-					$configuration['vendorName'] = $r['vendor'];
-					$configuration['pluginName'] = $r['plugin'];
-					$configuration['controller'] = $r['controller'];
-					$configuration['action'] = $r['action'];
 				} else {
 					$skipProcessing = TRUE;
 				}
