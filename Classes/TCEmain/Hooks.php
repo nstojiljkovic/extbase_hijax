@@ -59,9 +59,6 @@ class Hooks implements \TYPO3\CMS\Core\SingletonInterface {
 		switch ($params['cacheCmd']) {
 			case 'all':
 				$this->trackingManager->flushTrackingInfo();
-				$thumbnailGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('EssentialDots\\ExtbaseHijax\\Utility\\Ajax\\ThumbnailGenerator');
-				/* @var $thumbnailGenerator \EssentialDots\ExtbaseHijax\Utility\Ajax\ThumbnailGenerator */
-				$thumbnailGenerator->flushCache();
 				break;
 			default:
 		}

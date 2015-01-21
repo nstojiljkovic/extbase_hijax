@@ -33,7 +33,6 @@ return array(
 	'Tx_ExtbaseHijax_Tracking_Manager' => 'EssentialDots\\ExtbaseHijax\\Tracking\\Manager',
 	'Tx_ExtbaseHijax_Tslib_FE_Hook' => 'EssentialDots\\ExtbaseHijax\\Tslib\\FE\\Hook',
 	'Tx_ExtbaseHijax_Utility_Ajax_Dispatcher' => 'EssentialDots\\ExtbaseHijax\\Utility\\Ajax\\Dispatcher',
-	'Tx_ExtbaseHijax_Utility_Ajax_ThumbnailGenerator' => 'EssentialDots\\ExtbaseHijax\\Utility\\Ajax\\ThumbnailGenerator',
 	'Tx_ExtbaseHijax_Utility_Extension' => 'EssentialDots\\ExtbaseHijax\\Utility\\Extension',
 	'Tx_ExtbaseHijax_Utility_HTTP' => 'EssentialDots\\ExtbaseHijax\\Utility\\HTTP',
 	'Tx_ExtbaseHijax_ViewHelpers_Animation_SceneViewHelper' => 'EssentialDots\\ExtbaseHijax\\ViewHelpers\\Animation\\SceneViewHelper',

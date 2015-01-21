@@ -169,11 +169,6 @@ class Tx_ExtbaseHijax_Utility_Ajax_Dispatcher extends \EssentialDots\ExtbaseHija
 /**
  * @deprecated since 2.0.0.dev
  */
-class Tx_ExtbaseHijax_Utility_Ajax_ThumbnailGenerator extends \EssentialDots\ExtbaseHijax\Utility\Ajax\ThumbnailGenerator {}
-
-/**
- * @deprecated since 2.0.0.dev
- */
 class Tx_ExtbaseHijax_Utility_Extension extends \EssentialDots\ExtbaseHijax\Utility\Extension {}
 
 /**
