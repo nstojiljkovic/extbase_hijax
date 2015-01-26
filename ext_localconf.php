@@ -63,3 +63,4 @@ $extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Mvc\\Contr
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ObjectStorageConverter']['className'] = 'EssentialDots\\ExtbaseHijax\\Property\\TypeConverter\\ObjectStorageConverter';
 unset($extbaseObjectContainer);
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['EssentialDots\\ExtbaseHijax\\Session\\AbstractSession']['className'] = 'EssentialDots\\ExtbaseHijax\\Session\\Session';
