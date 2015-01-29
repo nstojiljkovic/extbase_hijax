@@ -43,9 +43,7 @@ class Session extends AbstractSession {
 	public function get($key) {
 		$this->start();
 
-		// @codingStandardsIgnoreStart
-		return $_SESSION[$key];
-		// @codingStandardsIgnoreEnd
+		return $GLOBALS['_SESSION'][$key];
 	}
 
 	/**
@@ -55,9 +53,7 @@ class Session extends AbstractSession {
 	public function set($key, $value) {
 		$this->start();
 
-		// @codingStandardsIgnoreStart
-		$_SESSION[$key] = $value;
-		// @codingStandardsIgnoreEnd
+		$GLOBALS['_SESSION'][$key] = $value;
 	}
 
 	/**
@@ -68,23 +64,24 @@ class Session extends AbstractSession {
 	public function setIfNotExist($key, $value) {
 		$this->start();
 
-		// @codingStandardsIgnoreStart
-		if (!isset($_SESSION[$key])) {
-			$_SESSION[$key] = $value;
+		if (!isset($GLOBALS['_SESSION'][$key])) {
+			$GLOBALS['_SESSION'][$key] = $value;
 		}
 
-		return $_SESSION[$key];
-		// @codingStandardsIgnoreEnd
+		return $GLOBALS['_SESSION'][$key];
 	}
 
 	/**
+	 * @param bool $startRemoteEvenIfLocalSessionExist
 	 * @return bool
 	 */
-	public function start() {
+	public function start($startRemoteEvenIfLocalSessionExist = FALSE) {
 		$result = TRUE;
 
 		if (!$this->sessionStarted) {
-			$result = session_start();
+			if ($startRemoteEvenIfLocalSessionExist || !$GLOBALS['_SESSION'] || count($GLOBALS['_SESSION']) === 0) {
+				$result = session_start();
+			}
 			$this->sessionStarted = $result;
 		}
 
@@ -92,9 +89,10 @@ class Session extends AbstractSession {
 	}
 
 	/**
+	 * @param bool $unsetLocalSession
 	 * @return bool
 	 */
-	public function commit() {
+	public function commit($unsetLocalSession = TRUE) {
 		$result = FALSE;
 
 		if ($this->sessionStarted) {
@@ -102,10 +100,10 @@ class Session extends AbstractSession {
 			$this->sessionStarted = FALSE;
 			session_write_close();
 
-			// @codingStandardsIgnoreStart
-			unset($_SESSION);
-			$_SESSION = NULL;
-			// @codingStandardsIgnoreEnd
+			if ($unsetLocalSession) {
+				unset($GLOBALS['_SESSION']);
+				$GLOBALS['_SESSION'] = NULL;
+			}
 		}
 
 		return $result;
