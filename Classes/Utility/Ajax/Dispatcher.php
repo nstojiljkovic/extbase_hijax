@@ -477,8 +477,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 			'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
 			$GLOBALS['TYPO3_CONF_VARS'],
 			\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id'),
-			\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('type'),
-			TRUE);
+			\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('type'));
 		$GLOBALS['TSFE'] = &$tsfe;
 
 		$tsfe->initFEuser();
