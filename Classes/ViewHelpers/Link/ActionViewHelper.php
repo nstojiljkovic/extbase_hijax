@@ -66,25 +66,68 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 	 * @param string $format
 	 * @param int $pageUid
 	 * @param boolean $cachedAjaxIfPossible TRUE if the URI should be cached (with respect to non-cacheable actions)
-	 * @param boolean $forceContext TRUE if the controller/action/... should be passed
+	 * @param mixed $forceContext TRUE if the controller/action/... should be passed. Or array of keys that should be merged
+	 * @param array $skipContextArguments
 	 * @param boolean $noAjax
+	 * @param boolean $returnUriOnly
 	 *
 	 * @return string
 	 */
 	public function render(
-			$action = NULL, array $arguments = array(), $controller = NULL, $extensionName = NULL, $pluginName = NULL, $format = '',
-			$pageUid = NULL, $cachedAjaxIfPossible = TRUE, $forceContext = TRUE, $noAjax = FALSE) {
+			$action = NULL,
+			array $arguments = array(),
+			$controller = NULL,
+			$extensionName = NULL,
+			$pluginName = NULL,
+			$format = '',
+			$pageUid = NULL,
+			$cachedAjaxIfPossible = TRUE,
+			$forceContext = TRUE,
+			$skipContextArguments = array(),
+			$noAjax = FALSE,
+			$returnUriOnly = FALSE) {
 		$request = $this->mvcDispatcher->getCurrentRequest();
 
 		if ($forceContext) {
 			$requestArguments = $this->controllerContext->getRequest()->getArguments();
 			$requestArguments = array_merge($requestArguments, $this->hijaxEventDispatcher->getContextArguments());
+			if (is_array($forceContext)) {
+				$filteredRequestArguments = array();
+				foreach ($forceContext as $key) {
+					if (array_key_exists($key, $requestArguments)) {
+						$filteredRequestArguments[$key] = $requestArguments[$key];
+					}
+				}
+				$requestArguments = $filteredRequestArguments;
+			}
+			if (count($skipContextArguments)) {
+				foreach ($skipContextArguments as $key) {
+					if (array_key_exists($key, $requestArguments)) {
+						unset($requestArguments[$key]);
+					}
+				}
+			}
 			$requestArguments = array_merge($requestArguments, $arguments);
 			$arguments = $requestArguments;
 		}
 
 		if ($noAjax) {
-			$result = parent::render($action, $arguments, $controller, $extensionName, $pluginName, $pageUid);
+			if ($returnUriOnly) {
+				$uriBuilder = $this->controllerContext->getUriBuilder();
+				$pageType = 0;
+				$noCache = FALSE;
+				$noCacheHash = FALSE;
+				$result = $uriBuilder
+					->reset()
+					->setTargetPageUid($pageUid)
+					->setTargetPageType($pageType)
+					->setNoCache($noCache)
+					->setUseCacheHash(!$noCacheHash)
+					->setFormat($format)
+					->uriFor($action, $arguments, $controller, $extensionName, $pluginName);
+			} else {
+				$result = parent::render($action, $arguments, $controller, $extensionName, $pluginName, $pageUid);
+			}
 		} else {
 
 			/* @var $listener \EssentialDots\ExtbaseHijax\Event\Listener */
@@ -160,11 +203,15 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 				'parameter' => $pageUid
 			));
 
-			$this->tag->addAttribute('href', $uri);
-			$this->tag->setContent($this->renderChildren());
-			$this->tag->forceClosingTag(TRUE);
+			if ($returnUriOnly) {
+				$result = $uri;
+			} else {
+				$this->tag->addAttribute('href', $uri);
+				$this->tag->setContent($this->renderChildren());
+				$this->tag->forceClosingTag(TRUE);
 
-			$result = $this->tag->render();
+				$result = $this->tag->render();
+			}
 		}
 
 		return $result;
