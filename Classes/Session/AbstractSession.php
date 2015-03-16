@@ -71,6 +71,11 @@ abstract class AbstractSession implements SingletonInterface {
 	}
 
 	/**
+	 * @return string
+	 */
+	abstract public function getId();
+
+	/**
 	 * @param string $key
 	 * @return mixed
 	 */

@@ -37,6 +37,20 @@ class Session extends AbstractSession {
 	protected $sessionStarted = FALSE;
 
 	/**
+	 * @var string
+	 */
+	protected $sessionId = '';
+
+	/**
+	 * @return string
+	 */
+	public function getId() {
+		$this->start();
+
+		return $this->sessionId;
+	}
+
+	/**
 	 * @param string $key
 	 * @return mixed
 	 */
@@ -81,6 +95,11 @@ class Session extends AbstractSession {
 		if (!$this->sessionStarted) {
 			if ($startRemoteEvenIfLocalSessionExist || !$GLOBALS['_SESSION'] || count($GLOBALS['_SESSION']) === 0) {
 				$result = session_start();
+				if ($result) {
+					$this->sessionId = session_id();
+				} else {
+					$this->sessionId = '';
+				}
 			}
 			$this->sessionStarted = $result;
 		}
