@@ -96,7 +96,10 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 					continue;
 				}
 				$columnMap = $dataMap->getColumnMap($propertyName);
-				if ($propertyValue instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
+				if (is_null($propertyValue)) {
+					// ignore null values at this stage
+					continue;
+				} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
 					// just skip, it's too much to deal with ObjectStorage atm
 					continue;
 				} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface
