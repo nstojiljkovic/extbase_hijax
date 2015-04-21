@@ -23,6 +23,7 @@ namespace EssentialDots\ExtbaseHijax\Persistence;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Query
@@ -40,6 +41,11 @@ class Query extends \TYPO3\CMS\Extbase\Persistence\Generic\Query {
 	 * @var string
 	 */
 	protected $sqlStatement = '';
+
+	/**
+	 * @var array
+	 */
+	protected $edScaleTablesUsed = array();
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Persistence\Parser\SQL
@@ -95,7 +101,7 @@ class Query extends \TYPO3\CMS\Extbase\Persistence\Generic\Query {
 		if ($this->statement) {
 			$this->sqlParser->setLimitStatement($this->getLimitStatement());
 			$statement = $this->sqlParser->toString();
-			$this->statement = $this->qomFactory->statement($statement, $this->parameters);
+			$this->statement = $this->qomFactory->statement($this->getEdScaleTablesUsedComment() . $statement, $this->parameters);
 		}
 		return $this;
 	}
@@ -112,7 +118,7 @@ class Query extends \TYPO3\CMS\Extbase\Persistence\Generic\Query {
 		if ($this->statement) {
 			$this->sqlParser->setLimitStatement($this->getLimitStatement());
 			$statement = $this->sqlParser->toString();
-			$this->statement = $this->qomFactory->statement($statement, $this->parameters);
+			$this->statement = $this->qomFactory->statement($this->getEdScaleTablesUsedComment() . $statement, $this->parameters);
 		}
 		return $this;
 	}
@@ -130,7 +136,7 @@ class Query extends \TYPO3\CMS\Extbase\Persistence\Generic\Query {
 		if ($this->statement) {
 			$this->sqlParser->setLimitStatement($this->getLimitStatement());
 			$statement = $this->sqlParser->toString();
-			$this->statement = $this->qomFactory->statement($statement, $this->parameters);
+			$this->statement = $this->qomFactory->statement($this->getEdScaleTablesUsedComment() . $statement, $this->parameters);
 		}
 		return $this;
 	}
@@ -155,6 +161,17 @@ class Query extends \TYPO3\CMS\Extbase\Persistence\Generic\Query {
 	}
 
 	/**
+	 * @return string
+	 */
+	protected function getEdScaleTablesUsedComment() {
+		if (count($this->edScaleTablesUsed) > 0) {
+			return '# @tables_used = ' . implode(',', $this->edScaleTablesUsed) . chr(10);
+		}
+
+		return '';
+	}
+
+	/**
 	 * Sets the statement of this query programmatically. If you use this, you will lose the abstraction from a concrete storage
 	 * backend (database).
 	 *
@@ -164,8 +181,14 @@ class Query extends \TYPO3\CMS\Extbase\Persistence\Generic\Query {
 	 */
 	public function statement($statement, array $parameters = array()) {
 		$this->parameters = $parameters;
-		$this->sqlStatement = $statement;
-		$this->sqlParser = \EssentialDots\ExtbaseHijax\Persistence\Parser\SQL::parseString($statement);
+		if (preg_match('/^\s*#\s*@tables_used\s*=\s*(.*)\s*;/msU', $statement, $matches)) {
+			$this->edScaleTablesUsed = GeneralUtility::trimExplode(',', $matches[1]);
+			$this->sqlStatement = preg_replace('/^\s*#\s*@tables_used\s*=\s*(.*)\s*;/msU', '', $statement);
+		} else {
+			$this->edScaleTablesUsed = array();
+			$this->sqlStatement = $statement;
+		}
+		$this->sqlParser = \EssentialDots\ExtbaseHijax\Persistence\Parser\SQL::parseString($this->sqlStatement);
 		$this->statement = $this->qomFactory->statement($statement, $parameters);
 		return $this;
 	}
