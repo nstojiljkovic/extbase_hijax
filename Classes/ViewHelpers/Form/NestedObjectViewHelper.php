@@ -42,6 +42,12 @@ class NestedObjectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
 	protected $newVariables = array();
 
 	/**
+	 * @var \EssentialDots\ExtbaseHijax\Property\TypeConverterService\ObjectStorageMappingService
+	 * @inject
+	 */
+	protected $objectStorageMappingService;
+
+	/**
 	 * Render the sub-form.
 	 *
 	 * @param string $objectName name of the object that is bound to this form. If this argument is not specified, the name attribute of this form is used to determine the FormObjectName
@@ -126,6 +132,7 @@ class NestedObjectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
 			$propertySegments = explode('.', $this->arguments['objectName']);
 			$propertyPath = '';
 			foreach ($propertySegments as $segment) {
+				$segment = $this->objectStorageMappingService->getSourceKeyForSplObjectHash($segment);
 				$propertyPath .= '[' . $segment . ']';
 			}
 			$name = $formObjectName . $propertyPath;
