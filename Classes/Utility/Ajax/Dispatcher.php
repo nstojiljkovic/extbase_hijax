@@ -81,7 +81,12 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * @var boolean
 	 */
-	protected $preventMarkupUpdateOnAjaxLoad;
+	protected $preventMarkupUpdateOnAjaxLoad = FALSE;
+
+	/**
+	 * @var boolean
+	 */
+	protected $preventHistoryPush = FALSE;
 
 	/**
 	 * @var \Tx_EdCache_Domain_Repository_CacheRepository
@@ -108,7 +113,6 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 		$this->listenerFactory = $this->objectManager->get('EssentialDots\\ExtbaseHijax\\Service\\Serialization\\ListenerFactory');
 		$this->extensionService = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Service\\ExtensionService');
 		$this->cacheInstance = $GLOBALS['typo3CacheManager']->getCache('extbase_hijax_storage');
-		$this->preventMarkupUpdateOnAjaxLoad = FALSE;
 		if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('ed_cache')) {
 			$this->cacheRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_EdCache_Domain_Repository_CacheRepository');
 		}
@@ -126,6 +130,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 		$requests = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('r');
 		$eventsToListen = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('evts') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('evts') : \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('e');
 		$preventDirectOutput = FALSE;
+		$preventJsonEncode = FALSE;
 		try {
 			$this->initializeDatabase();
 			$this->hijaxEventDispatcher->promoteNextPhaseEvents();
@@ -256,6 +261,12 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 				)
 			);
 			$preventDirectOutput = TRUE;
+		} catch (\EssentialDots\ExtbaseHijax\MVC\Exception\OutputRawDataAction $outputRawDataException) {
+			header('Content-type: ' . $outputRawDataException->getContentType());
+			$responses['original'][0]['response'] = $outputRawDataException->getMessage();
+
+			$preventJsonEncode = TRUE;
+			$preventDirectOutput = TRUE;
 		} catch (\Exception $e) {
 			header('HTTP/1.1 503 Service Unavailable');
 			header('Status: 503 Service Unavailable');
@@ -267,6 +278,9 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 		/** @var ArgumentsManager $argumentsManager */
 		$argumentsManager = GeneralUtility::makeInstance('EssentialDots\\ExtbaseHijax\\MVC\\Controller\\ArgumentsManager');
 		$responses['validation-errors'] = $argumentsManager->hasErrors();
+		if ($this->getPreventHistoryPush()) {
+			$responses['prevent-state-push'] = TRUE;
+		}
 
 		if (!$preventDirectOutput && $responses['original'][0]['format'] != 'html' && is_string($responses['original'][0]['response'])) {
 			foreach ($responses['original'][0]['headers'] as $header) {
@@ -279,9 +293,11 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 		} elseif ($callback) {
 			header('Content-type: text/javascript');
 			echo $callback . '(' . json_encode($responses) . ')';
-		} else {
+		} elseif (!$preventJsonEncode) {
 			header('Content-type: application/x-json');
 			echo json_encode($responses);
+		} else {
+			echo $responses['original'][0]['response'];
 		}
 
 		$this->setIsActive(FALSE);
@@ -577,6 +593,20 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	public function setPreventMarkupUpdateOnAjaxLoad($preventMarkupUpdateOnAjaxLoad) {
 		$this->preventMarkupUpdateOnAjaxLoad = $preventMarkupUpdateOnAjaxLoad;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getPreventHistoryPush() {
+		return $this->preventHistoryPush;
+	}
+
+	/**
+	 * @param boolean $preventHistoryPush
+	 */
+	public function setPreventHistoryPush($preventHistoryPush) {
+		$this->preventHistoryPush = $preventHistoryPush;
 	}
 
 	/**

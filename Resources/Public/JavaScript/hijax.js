@@ -287,7 +287,7 @@
 				if (data['redirect'] && data['redirect'].url) {
 					_redirectToURL(data['redirect'].url);
 				} else {
-					if (!data['validation-errors'] && typeof window.History != 'undefined' && window.History.enabled && typeof stateUrl != 'undefined' && stateUrl) {
+					if (!data['prevent-state-push'] && !data['validation-errors'] && typeof window.History != 'undefined' && window.History.enabled && typeof stateUrl != 'undefined' && stateUrl) {
 						History.pushState({hijax: true, custom: true, tstamp: new Date().getTime()}, null, stateUrl);
 					}
 
