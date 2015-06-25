@@ -35,27 +35,17 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 class Typo3DbBackend extends \TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend {
 
 	/**
-	 * Returns the number of tuples matching the query.
-	 *
-	 * @param \TYPO3\CMS\Extbase\Persistence\QueryInterface $query
+	 * @param QueryInterface $query
 	 * @return int
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Storage\Exception\BadConstraintException
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Storage\Exception\SqlErrorException
 	 */
 	public function getObjectCountByQuery(\TYPO3\CMS\Extbase\Persistence\QueryInterface $query) {
 		if (version_compare(TYPO3_version, '6.2', '<')) {
-			$result = $this->getObjectCountByQueryT361($query);
-		} else {
-			$result = $this->getObjectCountByQueryT362($query);
+			throw new \RuntimeException('Operation not supported in TYPO3 6.1 and lower!');
 		}
 
-		return $result;
-	}
-
-	/**
-	 * @param \TYPO3\CMS\Extbase\Persistence\QueryInterface $query
-	 * @return int
-	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Storage\Exception\BadConstraintException
-	 */
-	protected function getObjectCountByQueryT362(\TYPO3\CMS\Extbase\Persistence\QueryInterface $query) {
 		if ($query->getConstraint() instanceof \TYPO3\CMS\Extbase\Persistence\Generic\Qom\Statement) {
 			throw new \TYPO3\CMS\Extbase\Persistence\Generic\Storage\Exception\BadConstraintException(
 				'Could not execute count on queries with a constraint of type TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Qom\\StatementInterface', 1256661045);
@@ -93,99 +83,11 @@ class Typo3DbBackend extends \TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo
 			$this->databaseHandle->sql_free_result($res);
 		} else {
 			/*
-			 * Default Extbase logic
+			 * Default logic
 			 */
 			$count = parent::getObjectCountByQuery($query);
 		}
 
 		return (int)$count;
-	}
-
-	/**
-	 * @param \TYPO3\CMS\Extbase\Persistence\QueryInterface $query
-	 * @return int
-	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Storage\Exception\BadConstraintException
-	 */
-	protected function getObjectCountByQueryT361(\TYPO3\CMS\Extbase\Persistence\QueryInterface $query) {
-		$statement = $query->getStatement();
-		if ($statement instanceof \TYPO3\CMS\Extbase\Persistence\Generic\Qom\Statement) {
-			/*
-			 * Overriding default extbase logic for manually passed SQL
-			 */
-			$sql = $statement->getStatement();
-			$parameters = $statement->getBoundVariables();
-			$this->replacePlaceholders($sql, $parameters);
-
-			$sqlParser = \EssentialDots\ExtbaseHijax\Persistence\Parser\SQL::parseString($sql);
-
-			$countQuery = $sqlParser->getCountQuery();
-			$result = $this->databaseHandle->sql_query($countQuery);
-			$this->checkSqlErrors($countQuery);
-			if (version_compare(TYPO3_version, '6.1.0', '<')) {
-				$rows = $this->getRowsFromResult($query->getSource(), $result);
-			} else {
-				$rows = $this->getRowsFromResult($result);
-			}
-			$count = current(current($rows));
-			$this->databaseHandle->sql_free_result($result);
-		} else {
-			/*
-			 * Default Extbase logic
-			 */
-			$count = parent::getObjectCountByQuery($query);
-		}
-
-		return (int)$count;
-	}
-
-	/**
-	 * Parses the query and returns the SQL statement parts.
-	 *
-	 * @param QueryInterface $query The query
-	 * @param array $parameters
-	 * @return array The SQL statement parts
-	 */
-	public function parseQuery(QueryInterface $query, array &$parameters) {
-		// backward compatibility for some extensions like news v2.3.0 for TYPO3 6.2.0
-		if ($this->queryParser != NULL) {
-			// note: this does not use the new query cache in TYPO3 6.2!
-			list($queryHash, $parameters) = $this->queryParser->preparseQuery($query);
-			$result = $this->queryParser->parseQuery($query);
-		} else {
-			$result = parent::parseQuery($query, $parameters);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Returns the statement, ready to be executed.
-	 *
-	 * @param array $sql The SQL statement parts
-	 * @return string The SQL statement
-	 */
-	public function buildQuery(array $sql) {
-		if ($this->queryParser != NULL) {
-			$statement = 'SELECT ' . implode(' ', $sql['keywords']) . ' ' . implode(',', $sql['fields']) . ' FROM ' . implode(' ', $sql['tables']) . ' ' . implode(' ', $sql['unions']);
-			if (!empty($sql['where'])) {
-				$statement .= ' WHERE ' . implode('', $sql['where']);
-				if (!empty($sql['additionalWhereClause'])) {
-					$statement .= ' AND ' . implode(' AND ', $sql['additionalWhereClause']);
-				}
-			} elseif (!empty($sql['additionalWhereClause'])) {
-				$statement .= ' WHERE ' . implode(' AND ', $sql['additionalWhereClause']);
-			}
-			if (!empty($sql['orderings'])) {
-				$statement .= ' ORDER BY ' . implode(', ', $sql['orderings']);
-			}
-			if (!empty($sql['limit'])) {
-				$statement .= ' LIMIT ' . $sql['limit'];
-			}
-			$result = $statement;
-		} else {
-			$result = parent::buildQuery($sql);
-		}
-
-		return $result;
 	}
 }

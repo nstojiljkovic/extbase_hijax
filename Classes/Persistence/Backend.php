@@ -33,26 +33,6 @@ use TYPO3\CMS\Extbase\Persistence\ObjectMonitoringInterface;
 class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage
-	 */
-	protected $sessionAddedObjects = NULL;
-
-	/**
-	 * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage
-	 */
-	protected $sessionRemovedObjects = NULL;
-
-	/**
-	 * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage
-	 */
-	protected $sessionChangedObjects = NULL;
-
-	/**
-	 * @var array
-	 */
-	protected $pendingInsertObjects = array();
-
-	/**
 	 * @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
 	 * @inject
 	 */
@@ -70,114 +50,134 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 * @return void
 	 */
 	protected function insertObject(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject = NULL, $parentPropertyName = '') {
-		$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'beforeInsertObjectHijax', array('object' => $object));
 
-		if (FALSE) {
-			parent::insertObject($object);
-		} else {
-			if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject) {
-				$result = $this->getUidOfAlreadyPersistedValueObject($object);
-				if ($result !== FALSE) {
-					$object->_setProperty('uid', (int)$result);
-					return;
-				}
+		if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject) {
+			$result = $this->getUidOfAlreadyPersistedValueObject($object);
+			if ($result !== FALSE) {
+				$object->_setProperty('uid', (int)$result);
+				return;
 			}
-			$dataMap = $this->dataMapper->getDataMap(get_class($object));
-			$row = array();
-			$this->addCommonFieldsToRow($object, $row);
-			if ($dataMap->getLanguageIdColumnName() !== NULL) {
-				$row[$dataMap->getLanguageIdColumnName()] = -1;
-			}
+		}
+		$dataMap = $this->dataMapper->getDataMap(get_class($object));
+		$row = array();
+		$this->addCommonFieldsToRow($object, $row);
+		if ($dataMap->getLanguageIdColumnName() !== NULL) {
+			$row[$dataMap->getLanguageIdColumnName()] = -1;
+		}
 
-			$dataMap = $this->dataMapper->getDataMap(get_class($object));
-			$properties = $object->_getProperties();
-			foreach ($properties as $propertyName => $propertyValue) {
-				if (!$dataMap->isPersistableProperty($propertyName) || $this->propertyValueIsLazyLoaded($propertyValue)) {
-					continue;
-				}
-				$columnMap = $dataMap->getColumnMap($propertyName);
-				if (is_null($propertyValue)) {
-					// ignore null values at this stage
-					continue;
-				} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
-					// just skip, it's too much to deal with ObjectStorage atm
-					continue;
-				} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface
-					&& $object instanceof ObjectMonitoringInterface) {
-					if ($object->_isDirty($propertyName)) {
-						if (!$propertyValue->_isNew()) {
-							$row[$columnMap->getColumnName()] = $this->getPlainValue($propertyValue);
-							if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
-								$object->_memorizeCleanState($propertyName);
-							}
+		$dataMap = $this->dataMapper->getDataMap(get_class($object));
+		$properties = $object->_getProperties();
+		foreach ($properties as $propertyName => $propertyValue) {
+			if (!$dataMap->isPersistableProperty($propertyName) || $this->propertyValueIsLazyLoaded($propertyValue)) {
+				continue;
+			}
+			$columnMap = $dataMap->getColumnMap($propertyName);
+			if (is_null($propertyValue)) {
+				// ignore null values at this stage
+				continue;
+			} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
+				// just skip, it's too much to deal with ObjectStorage atm
+				continue;
+			} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface
+				&& $object instanceof ObjectMonitoringInterface) {
+				if ($object->_isDirty($propertyName)) {
+					if (!$propertyValue->_isNew()) {
+						$row[$columnMap->getColumnName()] = $this->getPlainValue($propertyValue);
+						if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
+							$object->_memorizeCleanState($propertyName);
 						}
 					}
-				} else {
-					$row[$columnMap->getColumnName()] = $this->getPlainValue($propertyValue, $columnMap);
-					if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
-						$object->_memorizeCleanState($propertyName);
-					}
 				}
-			}
-
-			if ($parentObject !== NULL && $parentPropertyName) {
-				$parentColumnDataMap = $this->dataMapper->getDataMap(get_class($parentObject))->getColumnMap($parentPropertyName);
-				$relationTableMatchFields = $parentColumnDataMap->getRelationTableMatchFields();
-				if (is_array($relationTableMatchFields)) {
-					$row = array_merge($relationTableMatchFields, $row);
-				}
-				if ($parentColumnDataMap->getParentKeyFieldName() !== NULL) {
-					$row[$parentColumnDataMap->getParentKeyFieldName()] = (int)$parentObject->getUid();
-				}
-			}
-			$uid = $this->storageBackend->addRow($dataMap->getTableName(), $row);
-			$object->_setProperty('uid', (int)$uid);
-			if ((int)$uid >= 1) {
-				$this->emitAfterInsertObjectSignal($object);
-			}
-			$frameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
-			if ($frameworkConfiguration['persistence']['updateReferenceIndex'] === '1') {
-				$this->referenceIndex->updateRefIndexTable($dataMap->getTableName(), $uid);
-			}
-			$this->session->registerObject($object, $uid);
-		}
-
-		if ($object->getUid() >= 1) {
-			/*
-			 * Check if update operation will be called for this object
-			 * (depending on the properties)
-			 * @see \TYPO3\CMS\Extbase\Persistence\Generic\Backend::persistObject
-			 */
-			$dataMap = $this->dataMapper->getDataMap(get_class($object));
-			$properties = $object->_getProperties();
-			$row = array();
-			foreach ($properties as $propertyName => $propertyValue) {
-				if (!$propertyValue || !is_object($propertyValue) || !$dataMap->isPersistableProperty($propertyName) || $this->propertyValueIsLazyLoaded($propertyValue)) {
-					continue;
-				}
-				$columnMap = $dataMap->getColumnMap($propertyName);
-				if ($propertyValue instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
-					if ($object->_isNew() || $propertyValue->_isDirty()) {
-						$row[$columnMap->getColumnName()] = TRUE;
-					}
-				} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface) {
-					if ($object->_isDirty($propertyName)) {
-						$row[$columnMap->getColumnName()] = TRUE;
-					}
-					$queue[] = $propertyValue;
-				} elseif ($object->_isNew() || $object->_isDirty($propertyName)) {
-					$row[$columnMap->getColumnName()] = TRUE;
-				}
-			}
-
-			if (count($row) > 0) {
-				$objectHash = spl_object_hash($object);
-				$this->pendingInsertObjects[$objectHash] = $object;
 			} else {
-				$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterInsertObjectHijax', array('object' => $object));
-				$this->sessionAddedObjects->attach($object);
+				$row[$columnMap->getColumnName()] = $this->getPlainValue($propertyValue, $columnMap);
+				if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
+					$object->_memorizeCleanState($propertyName);
+				}
 			}
 		}
+
+		if ($parentObject !== NULL && $parentPropertyName) {
+			$parentColumnDataMap = $this->dataMapper->getDataMap(get_class($parentObject))->getColumnMap($parentPropertyName);
+			$relationTableMatchFields = $parentColumnDataMap->getRelationTableMatchFields();
+			if (is_array($relationTableMatchFields)) {
+				$row = array_merge($relationTableMatchFields, $row);
+			}
+			if ($parentColumnDataMap->getParentKeyFieldName() !== NULL) {
+				$row[$parentColumnDataMap->getParentKeyFieldName()] = (int)$parentObject->getUid();
+			}
+		}
+
+		//////////////////// PATCH START //////////////////////
+		$params = array(
+			'pObj' => &$this,
+			'object' => &$object,
+			'tableName' => $dataMap->getTableName(),
+			'row' => &$row,
+			'isRelation' => FALSE
+		);
+		$this->signalSlotDispatcher->dispatch(__CLASS__, 'beforeAddRow', $params);
+		//////////////////// PATCH END //////////////////////
+
+		$uid = $this->storageBackend->addRow($dataMap->getTableName(), $row);
+		$object->_setProperty('uid', (int)$uid);
+
+		//////////////////// PATCH START //////////////////////
+		$params = array(
+			'pObj' => &$this,
+			'object' => &$object,
+			'tableName' => $dataMap->getTableName(),
+			'row' => &$row,
+			'isRelation' => FALSE,
+			'result' => $uid
+		);
+		$this->signalSlotDispatcher->dispatch(__CLASS__, 'afterAddRow', $params);
+		//////////////////// PATCH END //////////////////////
+
+		if ((int)$uid >= 1) {
+			$this->emitAfterInsertObjectSignal($object);
+		}
+		$frameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		if ($frameworkConfiguration['persistence']['updateReferenceIndex'] === '1') {
+			$this->referenceIndex->updateRefIndexTable($dataMap->getTableName(), $uid);
+		}
+		$this->session->registerObject($object, $uid);
+
+//		if ($object->getUid() >= 1) {
+//			/*
+//			 * Check if update operation will be called for this object
+//			 * (depending on the properties)
+//			 * @see \TYPO3\CMS\Extbase\Persistence\Generic\Backend::persistObject
+//			 */
+//			$dataMap = $this->dataMapper->getDataMap(get_class($object));
+//			$properties = $object->_getProperties();
+//			$row = array();
+//			foreach ($properties as $propertyName => $propertyValue) {
+//				if (!$propertyValue || !is_object($propertyValue) || !$dataMap->isPersistableProperty($propertyName) || $this->propertyValueIsLazyLoaded($propertyValue)) {
+//					continue;
+//				}
+//				$columnMap = $dataMap->getColumnMap($propertyName);
+//				if ($propertyValue instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
+//					if ($object->_isNew() || $propertyValue->_isDirty()) {
+//						$row[$columnMap->getColumnName()] = TRUE;
+//					}
+//				} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface) {
+//					if ($object->_isDirty($propertyName)) {
+//						$row[$columnMap->getColumnName()] = TRUE;
+//					}
+//					$queue[] = $propertyValue;
+//				} elseif ($object->_isNew() || $object->_isDirty($propertyName)) {
+//					$row[$columnMap->getColumnName()] = TRUE;
+//				}
+//			}
+//
+//			if (count($row) > 0) {
+//				$objectHash = spl_object_hash($object);
+//				$this->pendingInsertObjects[$objectHash] = $object;
+//			} else {
+//				$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterInsertObjectHijax', array('object' => $object));
+//				$this->sessionAddedObjects->attach($object);
+//			}
+//		}
 	}
 
 	/**
@@ -188,44 +188,49 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 * @return bool
 	 */
 	protected function updateObject(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, array $row) {
-		$objectHash = spl_object_hash($object);
-
-		if (!$this->pendingInsertObjects[$objectHash]) {
-			$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'beforeUpdateObjectHijax', array('object' => $object, 'row' => &$row));
-		}
-
-		$result = parent::updateObject($object, $row);
-
-		if ($result === TRUE) {
-			if (!$this->pendingInsertObjects[$objectHash]) {
-				$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterUpdateObjectHijax', array('object' => $object, 'row' => &$row));
-				$this->sessionChangedObjects->attach($object);
-			} else {
-				unset($this->pendingInsertObjects[$objectHash]);
-				$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterInsertObjectHijax', array('object' => $object, 'row' => &$row));
-				$this->sessionAddedObjects->attach($object);
+		//////////////////// ORIGINAL START //////////////////////
+		$dataMap = $this->dataMapper->getDataMap(get_class($object));
+		$this->addCommonFieldsToRow($object, $row);
+		$row['uid'] = $object->getUid();
+		if ($dataMap->getLanguageIdColumnName() !== NULL) {
+			$row[$dataMap->getLanguageIdColumnName()] = $object->_getProperty('_languageUid');
+			if ($object->_getProperty('_localizedUid') !== NULL) {
+				$row['uid'] = $object->_getProperty('_localizedUid');
 			}
 		}
 
+		//////////////////// PATCH START //////////////////////
+		$params = array(
+			'pObj' => &$this,
+			'object' => &$object,
+			'tableName' => $dataMap->getTableName(),
+			'row' => &$row,
+			'isRelation' => FALSE
+		);
+		$this->signalSlotDispatcher->dispatch(__CLASS__, 'beforeUpdateRow', $params);
+		//////////////////// PATCH END //////////////////////
+		$result = $this->storageBackend->updateRow($dataMap->getTableName(), $row);
+		//////////////////// PATCH START //////////////////////
+		$params = array(
+			'pObj' => &$this,
+			'object' => &$object,
+			'tableName' => $dataMap->getTableName(),
+			'row' => &$row,
+			'isRelation' => FALSE,
+			'result' => $result
+		);
+		$this->signalSlotDispatcher->dispatch(__CLASS__, 'afterUpdateRow', $params);
+
+		if ($result === TRUE) {
+			$this->emitAfterUpdateObjectSignal($object);
+		}
+		$frameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		if ($frameworkConfiguration['persistence']['updateReferenceIndex'] === '1') {
+			$this->referenceIndex->updateRefIndexTable($dataMap->getTableName(), $row['uid']);
+		}
+		//////////////////// ORIGINAL END //////////////////////
+
 		return $result;
-	}
-
-	/**
-	 * Deletes an object
-	 *
-	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object The object to be removed from the storage
-	 * @param bool $markAsDeleted Wether to just flag the row deleted (default) or really delete it
-	 * @return void
-	 */
-	protected function removeObject(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, $markAsDeleted = TRUE) {
-		$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'beforeRemoveObjectHijax', array('object' => $object));
-
-		// TODO: check if object is not already deleted
-		parent::removeObject($object, $markAsDeleted);
-
-		// TODO: check if object is removed indeed
-		$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterRemoveObjectHijax', array('object' => $object));
-		$this->sessionRemovedObjects->attach($object);
 	}
 
 	/**
@@ -236,39 +241,60 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 * @return void
 	 */
 	protected function removeEntity(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, $markAsDeleted = TRUE) {
-		$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'beforeRemoveObjectHijax', array('object' => $object));
-
-		// TODO: check if object is not already deleted
-		parent::removeEntity($object, $markAsDeleted);
-
-		// TODO: check if object is removed indeed
-		$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterRemoveObjectHijax', array('object' => $object));
-		$this->sessionRemovedObjects->attach($object);
-	}
-
-	/**
-	 * Commits the current persistence session.
-	 *
-	 * @return void
-	 */
-	public function commit() {
-		$this->sessionAddedObjects = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-		$this->sessionRemovedObjects = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-		$this->sessionChangedObjects = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-
-		parent::commit();
-
-		foreach ($this->sessionAddedObjects as $object) {
-			$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterInsertCommitObjectHijax', array('object' => $object));
+		$dataMap = $this->dataMapper->getDataMap(get_class($object));
+		$tableName = $dataMap->getTableName();
+		if ($markAsDeleted === TRUE && $dataMap->getDeletedFlagColumnName() !== NULL) {
+			$deletedColumnName = $dataMap->getDeletedFlagColumnName();
+			$row = array(
+				'uid' => $object->getUid(),
+				$deletedColumnName => 1
+			);
+			$this->addCommonDateFieldsToRow($object, $row);
+			//////////////////// PATCH START //////////////////////
+			$params = array(
+				'pObj' => &$this,
+				'object' => &$object,
+				'tableName' => $tableName,
+			);
+			$this->signalSlotDispatcher->dispatch(__CLASS__, 'beforeMarkAsDeletedRow', $params);
+			//////////////////// PATCH END //////////////////////
+			$res = $this->storageBackend->updateRow($tableName, $row);
+			//////////////////// PATCH START //////////////////////
+			$params = array(
+				'pObj' => &$this,
+				'object' => &$object,
+				'tableName' => $tableName,
+				'result' => $res
+			);
+			$this->signalSlotDispatcher->dispatch(__CLASS__, 'afterMarkAsDeletedRow', $params);
+			//////////////////// PATCH END //////////////////////
+		} else {
+			//////////////////// PATCH START //////////////////////
+			$params = array(
+				'pObj' => &$this,
+				'object' => &$object,
+				'tableName' => $tableName,
+			);
+			$this->signalSlotDispatcher->dispatch(__CLASS__, 'beforeRemoveRow', $params);
+			//////////////////// PATCH END //////////////////////
+			$res = $this->storageBackend->removeRow($tableName, array('uid' => $object->getUid()));
+			//////////////////// PATCH START //////////////////////
+			$params = array(
+				'pObj' => &$this,
+				'object' => &$object,
+				'tableName' => $tableName,
+				'result' => $res
+			);
+			$this->signalSlotDispatcher->dispatch(__CLASS__, 'afterRemoveRow', $params);
+			//////////////////// PATCH END //////////////////////
 		}
-		foreach ($this->sessionRemovedObjects as $object) {
-			$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterRemoveCommitObjectHijax', array('object' => $object));
+		if ($res === TRUE) {
+			$this->emitAfterRemoveObjectSignal($object);
 		}
-		foreach ($this->sessionChangedObjects as $object) {
-			$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterUpdateCommitObjectHijax', array('object' => $object));
+		$this->removeRelatedObjects($object);
+		$frameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		if ($frameworkConfiguration['persistence']['updateReferenceIndex'] === '1') {
+			$this->referenceIndex->updateRefIndexTable($tableName, $object->getUid());
 		}
-		$this->sessionAddedObjects = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-		$this->sessionRemovedObjects = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
-		$this->sessionChangedObjects = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Persistence\\ObjectStorage');
 	}
 }
