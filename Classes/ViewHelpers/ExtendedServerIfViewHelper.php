@@ -112,7 +112,7 @@ class ExtendedServerIfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstra
 				// no need to check for presence of this function - quick skip
 				continue;
 			}
-			if (preg_match('/' . $evilFunction . '([\s]){0,}\(/', $condition) === 1) {
+			if (preg_match('/' . preg_quote($evilFunction, '/') . '([\s]){0,}\(/', $condition) === 1) {
 				throw new \Exception('Disallowed PHP function "' . $evilFunction . '" used in IfViewHelper condition. Allowed functions: ' . $goodFunctions, 1309613359);
 			}
 		}
