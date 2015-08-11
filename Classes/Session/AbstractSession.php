@@ -71,6 +71,13 @@ abstract class AbstractSession implements SingletonInterface {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function destroy() {
+		self::$singletonInstance = NULL;
+	}
+
+	/**
 	 * @return string
 	 */
 	abstract public function getId();
