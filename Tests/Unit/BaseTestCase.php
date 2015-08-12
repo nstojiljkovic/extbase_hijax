@@ -62,6 +62,11 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 	/**
 	 * @var array
 	 */
+	protected $skipMemoryEngineForTables = array();
+
+	/**
+	 * @var array
+	 */
 	protected $extensions = array('cms', 'frontend', 'backend', 'extbase', 'tstemplate', 'extbase_hijax');
 
 	/**
@@ -374,9 +379,9 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 	 */
 	protected function importExtension($extensionName) {
 		$sqlFilename = GeneralUtility::getFileAbsFileName(ExtensionManagementUtility::extPath($extensionName) . 'ext_tables.sql');
-		$fileContent = GeneralUtility::getUrl($sqlFilename);
-
-		$this->importDatabaseDefinitions($fileContent);
+		if (($fileContent = GeneralUtility::getUrl($sqlFilename))) {
+			$this->importDatabaseDefinitions($fileContent);
+		}
 	}
 
 
@@ -536,8 +541,15 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 	protected function importDatabaseDefinitions($definitionContent) {
 
 		if ($this->useDataBaseMemoryEngine) {
+			$preserveSql = array();
 			$definitionContent = preg_replace('/\)\s*ENGINE\s*=\s*(.*)\s*;/msU', ') ENGINE=MEMORY;', $definitionContent);
 			$definitionContent = preg_replace('/\)\s*;/msU', ') ENGINE=MEMORY;', $definitionContent);
+			foreach ($this->skipMemoryEngineForTables as $skipMemoryEngineForTable) {
+				$matches = NULL;
+				if (preg_match_all('/CREATE\s+TABLE\s+' . $skipMemoryEngineForTable . '\s+(.*)ENGINE=MEMORY;/msU', $definitionContent, $matches) > 0) {
+					$preserveSql[$skipMemoryEngineForTable] = $matches[1];
+				}
+			}
 			$definitionContent = preg_replace('/\s+text([\s+,])/', ' varchar(1024)$1', $definitionContent);
 			$definitionContent = preg_replace('/\s+longtext([\s+,])/', ' varchar(1024)$1', $definitionContent);
 			$definitionContent = preg_replace('/\s+mediumtext([\s+,])/', ' varchar(1024)$1', $definitionContent);
@@ -546,6 +558,12 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 			$definitionContent = preg_replace('/\s+longblob([\s+,])/', ' varchar(4096)$1', $definitionContent);
 			$definitionContent = preg_replace('/\s+mediumblob([\s+,])/', ' varchar(1024)$1', $definitionContent);
 			$definitionContent = preg_replace('/\s+tinyblob([\s+,])/', ' varchar(255)$1', $definitionContent);
+
+			foreach ($preserveSql as $tableName => $sqlArr) {
+				foreach ($sqlArr as $sql) {
+					$definitionContent = preg_replace('/CREATE\s+TABLE\s+' . $tableName . '\s+([^;]*)ENGINE=MEMORY;/msU', 'CREATE TABLE ' . $tableName . ' ' . $sql . ';', $definitionContent, 1);
+				}
+			}
 		}
 
 		$sqlHandler = GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Sql\\SchemaMigrator');
