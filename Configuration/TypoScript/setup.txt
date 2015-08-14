@@ -41,8 +41,8 @@
 
 			20 = TEXT
 			20.wrap (
-				<script type="text/javascript">//<![CDATA[
-					var EXTBASE_HIJAX = {initElement: [], forceHTTPSLocalStorage: true, unloadElement: [], onLoadElement: [], beforeLoadElement: [], bodyClass: 'hijax-js-off', loadingClass: 'hijax-loading', fallbackClass: 'hijax-js-fallback', contentClass: 'hijax-content'
+<script type="text/javascript">//<![CDATA[
+    var EXTBASE_HIJAX = {initElement: [], forceHTTPSLocalStorage: true, unloadElement: [], onLoadElement: [], beforeLoadElement: [], bodyClass: 'hijax-js-off', loadingClass: 'hijax-loading', fallbackClass: 'hijax-js-fallback', contentClass: 'hijax-content'
 			)
 
 			30 = TEXT
@@ -61,16 +61,21 @@
 
 			60 = TEXT
 			60.value (
-					};
-					try {
-						var body = document.getElementsByTagName("body")[0];
-						body.className = body.className + ' hijax-js-on';
-						body.className = body.className.replace(new RegExp('\\\\b' + EXTBASE_HIJAX.bodyClass + '\\\\b', 'g'), '');
-					} catch(err) {}
-				//]]></script>
+};
+try {
+    var body = document.getElementsByTagName("body")[0];
+    body.className = body.className + ' hijax-js-on';
+    body.className = body.className.replace(new RegExp('\\\\b' + EXTBASE_HIJAX.bodyClass + '\\\\b', 'g'), '');
+} catch(err) {}
 			)
 
-			70 = RESTORE_REGISTER
+			999 = TEXT
+			999.value (
+
+//]]></script>
+			)
+
+			1000 = RESTORE_REGISTER
 		}
 
 			# end of FE
