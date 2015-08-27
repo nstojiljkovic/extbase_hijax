@@ -63,11 +63,14 @@ class Session extends AbstractSession {
 	/**
 	 * @param string $key
 	 * @param $value
+	 * @return mixed
 	 */
 	public function set($key, $value) {
 		$this->start();
 
 		$GLOBALS['_SESSION'][$key] = $value;
+
+		return $GLOBALS['_SESSION'][$key];
 	}
 
 	/**

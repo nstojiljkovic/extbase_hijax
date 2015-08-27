@@ -91,6 +91,7 @@ abstract class AbstractSession implements SingletonInterface {
 	/**
 	 * @param string $key
 	 * @param $value
+	 * @return mixed
 	 */
 	abstract public function set($key, $value);
 
