@@ -1,3 +1,11 @@
+Version: 3.0.2
+Subject: [TASK] Implement orderings widget (compatible with paginate widget)
+Date:    2016-08-29 08:58:49 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=675edddc4facde4ef8fbc2e734ebdfc02349cef7
+
+Change-Id: Id30059d02f5adfcf90d72f2ba803cc711e8d7dbb
+Related: #TP-4125
+
 Version: 3.0.1
 Subject: Merge "[TASK] Tweak loader CSS so that only background has opacity applied"
 Date:    2016-08-29 08:53:23 +0200
