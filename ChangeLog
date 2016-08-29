@@ -1,3 +1,11 @@
+Version: 3.0.3
+Subject: [BUGFIX] Remove doubled GET parameters from h:widget.link
+Date:    2016-08-29 09:00:57 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=db4823115cbda018b0b7a8a3b803ed8aaf4100ba
+
+Change-Id: I741898a393a20df65f1177290021c5abdb68fe98
+Related: #TP-4125
+
 Version: 3.0.2
 Subject: [TASK] Implement orderings widget (compatible with paginate widget)
 Date:    2016-08-29 08:58:49 +0200
