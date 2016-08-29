@@ -195,7 +195,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 			->setFormat($this->arguments['format']);
 
 		if ($forceContext) {
-			$result = $uriBuilder->uriFor($action, $arguments, $controller, $extensionName, $pluginName);
+			$result = $uriBuilder->uriFor($action, array(), $controller, $extensionName, $pluginName);
 		} else {
 			$result = $uriBuilder->build();
 		}
