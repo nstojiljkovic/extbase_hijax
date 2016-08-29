@@ -78,19 +78,31 @@
 	overflow: visible !important;
 }
 
-.hijax-loading {
-	display: block; 
-	background: white url(../Images/loader.gif) no-repeat 50% 50%; 
-	height: 100%; 
+.hijax-loading,
+.hijax-loading:before,
+.hijax-loading:after {
 	display: none;
-	position: absolute; 
+	height: 100%;
+	position: absolute;
 	width: 100%; 
-	left: 0px; 
-	top: 0px; 
+	left: 0;
+	top: 0;
 	z-index: 10000;
+}
+.hijax-loading:before {
+	display: block;
+	z-index: 10001;
+	background: #FFFFFF;
+	content: ' ';
 	filter: alpha(opacity=50);
-	-moz-opacity:0.5; 
+	-moz-opacity:0.5;
 	opacity:0.5;
+}
+.hijax-loading:after {
+	display: block;
+	z-index: 10002;
+	background: transparent url(../Images/loader.gif) no-repeat 50% 50%;
+	content: ' ';
 }
 
 .hijax-error {
