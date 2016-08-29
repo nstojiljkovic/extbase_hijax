@@ -1,3 +1,18 @@
+Version: 3.0.1
+Subject: Merge "[TASK] Tweak loader CSS so that only background has opacity applied"
+Date:    2016-08-29 08:53:23 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=c1ddd6e98a6139aeca0df5177789bfbba47623a7
+
+
+
+Version: 3.0.1
+Subject: [TASK] Tweak loader CSS so that only background has opacity applied
+Date:    2016-08-29 10:51:14 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=121d4cea9316937615cb7647afd741a7d0bb76c4
+
+Change-Id: Ie47ed606979376ffa2a80c37a458dd723772955e
+Related: #TP-4125
+
 Version: 3.0.0
 Subject: [TASK] Convert documentation to markdown format
 Date:    2016-08-29 10:42:07 +0200
