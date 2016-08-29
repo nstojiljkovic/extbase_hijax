@@ -1,0 +1,6 @@
+Version: 3.0.0
+Subject: [TASK] Convert documentation to markdown format
+Date:    2016-08-29 10:42:07 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=8c54be6f79270f9b2cc2db67232935ecf9f097b5
+
+Change-Id: I1ef7bc3d3fbc8e034e2fc2a476c6c8b469224d74
