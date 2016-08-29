@@ -23,6 +23,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers\Widget\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 
 /**
  * Class PaginateController
@@ -61,7 +62,7 @@ class PaginateController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
 	 */
 	public function initializeAction() {
 		$this->objects = $this->widgetConfiguration['objects'];
-		$this->configuration = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($this->configuration, $this->widgetConfiguration['configuration'], TRUE);
+		ArrayUtility::mergeRecursiveWithOverrule($this->configuration, $this->widgetConfiguration['configuration'], TRUE);
 		$this->variables = $this->widgetConfiguration['variables'];
 
 		$objectsCount = 0;
@@ -104,9 +105,15 @@ class PaginateController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
 				$query->setLimit($limit);
 				$query->setOffset($offset);
 
-				$modifiedObjects = $query->execute();
-				foreach ($modifiedObjects as $obj) {
-					$paginatedItems[] = $obj;
+				if (count($this->objects) === 1 && $objects instanceof \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult) {
+					$paginatedItems = $this->objectManager->get(get_class($objects), $query);
+					break;
+				} else {
+					// mixed bag of bunch of collections
+					$modifiedObjects = $query->execute();
+					foreach ($modifiedObjects as $obj) {
+						$paginatedItems[] = $obj;
+					}
 				}
 			} else {
 				$i = 0;
