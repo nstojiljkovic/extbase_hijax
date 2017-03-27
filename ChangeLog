@@ -1,3 +1,11 @@
+Version: 3.0.5
+Subject: [BUGFIX] Do not set limit if it's 0
+Date:    2017-03-27 16:24:55 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=755c8889a1bdbf02454a590a4f84756780a7b318
+
+Change-Id: I3f14997c2bdc479ea8f461c4e735f3095fb7d809
+Related: #TP-4125
+
 Version: 3.0.4
 Subject: [BUGFIX] Respect already configured query limit in h:widget.paginate
 Date:    2016-09-17 13:45:34 +0200
