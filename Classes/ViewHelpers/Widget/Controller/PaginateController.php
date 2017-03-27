@@ -103,7 +103,10 @@ class PaginateController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
 			if ($objects instanceof \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult || $objects instanceof \TYPO3\CMS\Extbase\Persistence\QueryResultInterface) {
 				$query = $objects->getQuery();
 				// respect limit set by upper instances, for example by controllers
-				$query->setLimit($objects->count() < $limit + $offset ? $objects->count() - $offset : $limit);
+				$limit = $objects->count() < $limit + $offset ? $objects->count() - $offset : $limit;
+				if ($limit >= 1) {
+					$query->setLimit($limit);
+				}
 				$query->setOffset($offset);
 
 				if (count($this->objects) === 1 && $objects instanceof \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult) {
