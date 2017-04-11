@@ -89,7 +89,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	protected $preventHistoryPush = FALSE;
 
 	/**
-	 * @var \Tx_EdCache_Domain_Repository_CacheRepository
+	 * @var \EssentialDots\EdCache\Domain\Repository\CacheRepository
 	 */
 	protected $cacheRepository;
 
@@ -114,7 +114,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 		$this->extensionService = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Service\\ExtensionService');
 		$this->cacheInstance = $GLOBALS['typo3CacheManager']->getCache('extbase_hijax_storage');
 		if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('ed_cache')) {
-			$this->cacheRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_EdCache_Domain_Repository_CacheRepository');
+			$this->cacheRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('EssentialDots\\EdCache\\Domain\\Repository\\CacheRepository');
 		}
 	}
 

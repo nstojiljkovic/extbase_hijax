@@ -1,6 +1,7 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\Tests\Unit;
 
+use TYPO3\CMS\Core\Package\PackageManager;
 use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -48,6 +49,16 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 	 * @var array
 	 */
 	protected $typo3ConfVarsBackup;
+
+	/**
+	 * @var PackageManager
+	 */
+	protected $packageManagerBackup;
+
+	/**
+	 * @var array
+	 */
+	protected $loadedExtsBackup;
 
 	/**
 	 * @var boolean
@@ -149,8 +160,45 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 		if (ExtensionManagementUtility::isLoaded('ed_scale')) {
 			$this->extensions[] = 'ed_scale';
 		}
+
+		$this->loadedExtsBackup = $GLOBALS['TYPO3_LOADED_EXT'];
+		/* @var $objectManager \TYPO3\CMS\Extbase\Object\ObjectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		/** @var \TYPO3\CMS\Core\Package\PackageManager $packageManager */
+		$this->packageManagerBackup = $objectManager->get('TYPO3\\CMS\\Core\\Package\\PackageManager');
+		$allActivePackages = $this->packageManagerBackup->getActivePackages();
+		$newActivePackages = array();
+		$activePackagesMap = array();
+		$getPackageMap = array();
+		$extensionsWithDependencies[] = array();
+		foreach ($this->extensions as $key) {
+			$extensionsWithDependencies[] = $key;
+			$dependencies = $this->findDependencies($key);
+			if (is_array($dependencies)) {
+				$extensionsWithDependencies = array_merge($extensionsWithDependencies, $dependencies);
+			}
+			$extensionsWithDependencies = array_unique($extensionsWithDependencies);
+		}
+		$GLOBALS['TYPO3_LOADED_EXT'] = array();
+		foreach ($extensionsWithDependencies as $key) {
+			if (isset($allActivePackages[$key])) {
+				$newActivePackages[$key] = $allActivePackages[$key];
+				$activePackagesMap[] = [$key, TRUE];
+				$getPackageMap[] = [$key, $this->packageManagerBackup->getPackage($key)];
+				$GLOBALS['TYPO3_LOADED_EXT'][$key] = $this->loadedExtsBackup[$key];
+			}
+		}
+		/** @var \TYPO3\CMS\Core\Core\ClassLoader $classLoader */
+		$classLoader = \TYPO3\CMS\Core\Core\Bootstrap::getInstance()->getEarlyInstance('TYPO3\\CMS\\Core\\Core\\ClassLoader');
+		$classLoader->setPackages($newActivePackages);
+		$packageManager = $this->getMock('TYPO3\\CMS\\Core\\Package\\PackageManager', array(), array(), '', FALSE);
+		$packageManager->expects($this->any())->method('getActivePackages')->will($this->returnValue($newActivePackages));
+		$packageManager->expects($this->any())->method('isPackageAvailable')->will($this->returnValueMap($activePackagesMap));
+		$packageManager->expects($this->any())->method('isPackageActive')->will($this->returnValueMap($activePackagesMap));
+		$packageManager->expects($this->any())->method('getPackage')->will($this->returnValueMap($getPackageMap));
+		ExtensionManagementUtility::setPackageManager($packageManager);
+
 		$this->importExtensions($this->extensions, TRUE);
-		ExtensionManagementUtility::loadBaseTca(FALSE);
 		foreach ($this->extTablesPaths as $extensionName => $extTablesPath) {
 			/** @noinspection PhpUnusedLocalVariableInspection */
 			$_EXTKEY = $extensionName;
@@ -158,8 +206,14 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 			include($extTablesPath);
 			// @codingStandardsIgnoreEnd
 		}
+		ExtensionManagementUtility::loadBaseTca(FALSE);
 		ExtensionManagementUtility::loadNewTcaColumnsConfigFiles();
 		$this->extTablesPaths = array();
+		ExtensionManagementUtility::setPackageManager($this->packageManagerBackup);
+		$GLOBALS['TYPO3_LOADED_EXT'] = $this->loadedExtsBackup;
+		/** @var \TYPO3\CMS\Core\Core\ClassLoader $classLoader */
+		$classLoader = \TYPO3\CMS\Core\Core\Bootstrap::getInstance()->getEarlyInstance('TYPO3\\CMS\\Core\\Core\\ClassLoader');
+		$classLoader->setPackages($this->packageManagerBackup->getActivePackages());
 
 		// needed in order to avoid SQL errors
 		$GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] = '';
@@ -181,6 +235,11 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 		/** @noinspection PhpUnusedLocalVariableInspection */
 		$TCA = &$this->tcaBackup;
 		$TYPO3_CONF_VARS = $this->typo3ConfVarsBackup;
+		ExtensionManagementUtility::setPackageManager($this->packageManagerBackup);
+		$GLOBALS['TYPO3_LOADED_EXT'] = $this->loadedExtsBackup;
+		/** @var \TYPO3\CMS\Core\Core\ClassLoader $classLoader */
+		$classLoader = \TYPO3\CMS\Core\Core\Bootstrap::getInstance()->getEarlyInstance('TYPO3\\CMS\\Core\\Core\\ClassLoader');
+		$classLoader->setPackages($this->packageManagerBackup->getActivePackages());
 
 		unset($this->tcaBackup);
 	}
