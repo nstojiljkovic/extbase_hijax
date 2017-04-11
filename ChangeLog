@@ -1,3 +1,13 @@
+Version: 3.0.6
+Subject: [TASK] Reset PackageManager state for each unit test
+Date:    2017-04-11 11:49:18 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=d9252743189d65e4f704e4ada5333b17269aed35
+
+Also includes update of the ed_cache class names.
+
+Change-Id: I3f808be21a705082470094c397c7ed1f413d89b3
+Related: #TP-4284
+
 Version: 3.0.5
 Subject: [BUGFIX] Do not set limit if it's 0
 Date:    2017-03-27 16:24:55 +0200
