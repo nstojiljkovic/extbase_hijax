@@ -351,6 +351,26 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 
 		try {
 			$response = $converter->convert($response);
+
+			/* @var $tsfe \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController */
+			$tsfe = &$GLOBALS['TSFE'];
+			$tsfe->content = $response->getContent();
+
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-all'])) {
+				$params = array('pObj' => $tsfe);
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-all'] as $funcRef) {
+					GeneralUtility::callUserFunction($funcRef, $params, $tsfe);
+				}
+			}
+
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'])) {
+				$params = array('pObj' => $tsfe);
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'] as $funcRef) {
+					GeneralUtility::callUserFunction($funcRef, $params, $tsfe);
+				}
+			}
+
+			$response->setContent($tsfe->content);
 		} catch (\EssentialDots\ExtbaseHijax\HTMLConverter\FailedConversionException $e) {
 			$this->errorWhileConverting = TRUE;
 		}
