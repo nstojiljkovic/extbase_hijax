@@ -1,3 +1,11 @@
+Version: 3.0.7
+Subject: [TASK] Run core's contentPostProc-* hooks on AJAX response
+Date:    2017-06-15 19:08:25 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=e85e2b39ea7b0ca5896f3f8c1f592ef7daa71083
+
+Change-Id: I6750d96996779bfbda29aa83106a1261f6d014de
+Related: #TP-4365
+
 Version: 3.0.6
 Subject: [TASK] Reset PackageManager state for each unit test
 Date:    2017-04-11 11:49:18 +0200
