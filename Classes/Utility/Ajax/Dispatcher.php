@@ -23,8 +23,10 @@ namespace EssentialDots\ExtbaseHijax\Utility\Ajax;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use EssentialDots\EdCache\Domain\Repository\CacheRepository;
 use EssentialDots\ExtbaseHijax\Event\Listener;
 use EssentialDots\ExtbaseHijax\MVC\Controller\ArgumentsManager;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -112,10 +114,23 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 		$this->serviceContent = $this->objectManager->get('EssentialDots\\ExtbaseHijax\\Service\\Content');
 		$this->listenerFactory = $this->objectManager->get('EssentialDots\\ExtbaseHijax\\Service\\Serialization\\ListenerFactory');
 		$this->extensionService = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Service\\ExtensionService');
-		$this->cacheInstance = $GLOBALS['typo3CacheManager']->getCache('extbase_hijax_storage');
-		if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('ed_cache')) {
-			$this->cacheRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('EssentialDots\\EdCache\\Domain\\Repository\\CacheRepository');
+		/** @var CacheManager $cacheManager */
+		$cacheManager = $GLOBALS['typo3CacheManager'] ?: GeneralUtility::makeInstance(CacheManager::class);
+		$this->cacheInstance = $cacheManager->getCache('extbase_hijax_storage');
+	}
+
+	/**
+	 * @return CacheRepository
+	 */
+	protected function getCacheRepository() {
+		if ($this->cacheRepository != NULL) {
+			return $this->cacheRepository;
 		}
+
+		if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('ed_cache')) {
+			$this->cacheRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(CacheRepository::class);
+		}
+		return $this->cacheRepository;
 	}
 
 	/**
@@ -199,7 +214,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 				}
 
 				if (!$skipProcessing) {
-					if ($allowCaching && $this->cacheRepository) {
+					if ($allowCaching && $this->getCacheRepository()) {
 						$cacheConf = array(
 							'contentFunc' => array($this, 'handleFrontendRequest'),
 							'contentFuncParams' => array(
@@ -214,7 +229,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 						if ($configuration['settings']['extbaseHijaxDefaultCacheExpiryPeriod']) {
 							$cacheConf['expire_on_datetime'] = $GLOBALS['EXEC_TIME'] + $configuration['settings']['extbaseHijaxDefaultCacheExpiryPeriod'];
 						}
-						$cachedResponse = $this->cacheRepository->getByKey('hijax_' . $r['chash'], $cacheConf, $bootstrap->cObj);
+						$cachedResponse = $this->getCacheRepository()->getByKey('hijax_' . $r['chash'], $cacheConf, $bootstrap->cObj);
 						$cachedResponse['id'] = $r['id'];
 						$responses['original'][] = $cachedResponse;
 					} else {
@@ -382,7 +397,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 			'preventMarkupUpdate' => $this->getPreventMarkupUpdateOnAjaxLoad(),
 			'headers' => $response->getHeaders());
 
-		if (!$this->errorWhileConverting && $isCacheCallback && !$request->isCached() && $this->cacheRepository) {
+		if (!$this->errorWhileConverting && $isCacheCallback && !$request->isCached() && $this->getCacheRepository()) {
 			error_log('Throwing Tx_EdCache_Exception_PreventActionCaching, did you missconfigure cacheable actions in Extbase?');
 			/* @var $preventActionCaching \Tx_EdCache_Exception_PreventActionCaching */
 			$preventActionCaching = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_EdCache_Exception_PreventActionCaching');

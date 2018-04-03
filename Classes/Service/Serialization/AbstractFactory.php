@@ -24,6 +24,9 @@ namespace EssentialDots\ExtbaseHijax\Service\Serialization;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class AbstractFactory
  *
@@ -62,7 +65,9 @@ abstract class AbstractFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	public function __construct() {
 		$this->objectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\Container\\Container');
 		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		$this->storage = $GLOBALS['typo3CacheManager']->getCache('extbase_hijax_storage');
+		/** @var CacheManager $cacheManager */
+		$cacheManager = $GLOBALS['typo3CacheManager'] ?: GeneralUtility::makeInstance(CacheManager::class);
+		$this->storage = $cacheManager->getCache('extbase_hijax_storage');
 		$this->objectCache = array();
 	}
 

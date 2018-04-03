@@ -1,6 +1,7 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\Tracking;
 
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /***************************************************************
@@ -88,7 +89,9 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	public function __construct() {
 		$this->fe = $GLOBALS['TSFE'];
-		$this->trackingCache = $GLOBALS['typo3CacheManager']->getCache('extbase_hijax_tracking');
+		/** @var CacheManager $cacheManager */
+		$cacheManager = $GLOBALS['typo3CacheManager'] ?: GeneralUtility::makeInstance(CacheManager::class);
+		$this->trackingCache = $cacheManager->getCache('extbase_hijax_tracking');
 		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$this->dataMapper = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Mapper\\DataMapper');
 		$this->configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');

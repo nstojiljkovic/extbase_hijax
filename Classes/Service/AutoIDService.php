@@ -24,6 +24,9 @@ namespace EssentialDots\ExtbaseHijax\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class AutoIDService
  *
@@ -40,7 +43,9 @@ class AutoIDService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->trackingCache = $GLOBALS['typo3CacheManager']->getCache('extbase_hijax_storage');
+		/** @var CacheManager $cacheManager */
+		$cacheManager = $GLOBALS['typo3CacheManager'] ?: GeneralUtility::makeInstance(CacheManager::class);
+		$this->trackingCache = $cacheManager->getCache('extbase_hijax_storage');
 	}
 
 	/**

@@ -1,6 +1,7 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\Cache;
 
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -57,7 +58,9 @@ class PageCacheFacade implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	public function __construct() {
 		$this->queuedPageHashs = array();
-		$this->pageCache = $GLOBALS['typo3CacheManager']->getCache('cache_pages');
+		/** @var CacheManager $cacheManager */
+		$cacheManager = $GLOBALS['typo3CacheManager'] ?: GeneralUtility::makeInstance(CacheManager::class);
+		$this->pageCache = $cacheManager->getCache('cache_pages');
 		if (ExtensionManagementUtility::isLoaded('nc_staticfilecache')) {
 			$this->ncStaticFileCache = GeneralUtility::makeInstance('tx_ncstaticfilecache');
 		}
