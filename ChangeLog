@@ -1,3 +1,11 @@
+Version: 3.0.8
+Subject: [TASK] TYPO3 8.7 caching framework related update
+Date:    2018-04-03 15:22:41 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=e8b5bda261a1ef0e126dba9062b8372b5ab1595a
+
+Change-Id: I85a63652a560391040b322cdaf28153a3284ffa5
+Relted: #TP-4633
+
 Version: 3.0.7
 Subject: [TASK] Run core's contentPostProc-* hooks on AJAX response
 Date:    2017-06-15 19:08:25 +0200
