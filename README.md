@@ -52,7 +52,7 @@ You can ajaxify any Fluid form by switching it to extbase_hijax's form viewhelpe
 ```
 In order to ajaxify it you just need to import the extbase_hijax namespace (differences are bolded):
 ```
-{namespace h=Tx_ExtbaseHijax_ViewHelpers}
+{namespace h=EssentialDots\ExtbaseHijax\ViewHelpers}
 <h:form action="create" controller="Vote" object="{newVote}" name="newVote"> 
     <!--
           // form fields
@@ -82,7 +82,7 @@ You can however style the .hijax-loading element by override background-color, b
 
 By default the result received from AJAX call on form submit will be loaded in the place of the form element (warning – this will be for sure improved in near future). You can override that by using new resultTarget attribute of the form viewhelper (differences are bolded):
 ```
-{namespace h=Tx_ExtbaseHijax_ViewHelpers}
+{namespace h=EssentialDots\ExtbaseHijax\ViewHelpers}
 <h:form action="create" controller="Vote" object="{newVote}" name="newVote" resultTarget="jQuery(this).parent()">
     <!--
         // form fields
@@ -91,7 +91,7 @@ By default the result received from AJAX call on form submit will be loaded in t
 ```
 In this example the result will be loaded in the form's parent element. This attribute has to be a valid JavaScript expression. If you need to check in your extension whether the action is called from AJAX or regular version (in order to provide possibly slightly different markup), you can use the following function call:
 ```
-if ($this->objectManager->get('Tx_ExtbaseHijax_Utility_Ajax_Dispatcher')->getIsActive()) {
+if ($this->objectManager->get('EssentialDots\\ExtbaseHijax\\Utility\\Ajax\\Dispatcher')->getIsActive()) {
     // ...
 }
 ```
@@ -105,7 +105,7 @@ This change should be seamless, but you are warned to test everything in detail 
 This one is also really simple and very useful. Works the same way as the Fluid's built-in IF viewhelper with only one difference – the condition should be JavaScript expression as it is evaluated on client-side on DOM ready event. Sample:
 
 ```
-{namespace h=Tx_ExtbaseHijax_ViewHelpers}
+{namespace h=EssentialDots\ExtbaseHijax\ViewHelpers}
 <h:if condition="jQuery.cookie('{poll.cookieIdentifier}')!=1">
     <h:then>
           <f:render partial="Poll/Form" arguments="{poll: poll, newVote: newVote}"/>
@@ -137,8 +137,8 @@ Extbase_hijax implements completely new way of communicating between FE plugin i
 
 Both implement observer pattern. However, there is one fundamental difference:
 
-* `Tx_Extbase_SignalSlot_Dispatcher` notifies the listeners immediately,
-* `Tx_ExtbaseHijax_Event_Dispatcher` notifies the listeners once per rendering cycle.
+* `TYPO3\CMS\Extbase\SignalSlot\Dispatcher` notifies the listeners immediately,
+* `EssentialDots\ExtbaseHijax\Event\Dispatcher` notifies the listeners once per rendering cycle.
 
 If we return to our above-mentioned problem, sending a signal (with for example name user-updated) from the edit account plugin through `SignalSlot_Dispatcher` won't change the already rendered user info in the header. User info is at this point just a plain string in the $GLOBALS['TSFE']->content.
 
@@ -162,8 +162,8 @@ Ok, so let's get down to the example. Edit account plugin from the above problem
 
 ```
 if (t3lib_extMgm::isLoaded('extbase_hijax')) {
-    $event = new Tx_ExtbaseHijax_Event_Event('user-updated', array('user'=>$user));
-    $this->objectManager->get('Tx_ExtbaseHijax_Event_Dispatcher')->notify($event);
+    $event = new EssentialDots\ExtbaseHijax\Event\Event('user-updated', array('user'=>$user));
+    $this->objectManager->get('EssentialDots\\ExtbaseHijax\\Event\\Dispatcher')->notify($event);
 }
 ```
 
@@ -172,17 +172,17 @@ User info plugin in the header can connect to that event in the following way:
 ```
 public function someAction() {
     ...
-    $this->objectManager->get('Tx_ExtbaseHijax_Event_Dispatcher')->connect('user-updated', array($this, 'onUserUpdate'));
+    $this->objectManager->get('EssentialDots\\ExtbaseHijax\\Event\\Dispatcher')->connect('user-updated', array($this, 'onUserUpdate'));
     ... 
 }
 
 /**
- * @var $event Tx_ExtbaseHijax_Event_Event
+ * @var $event \EssentialDots\ExtbaseHijax\Event\Event
  */
-public function onUserUpdate(Tx_ExtbaseHijax_Event_Event $event) {
+public function onUserUpdate(\EssentialDots\ExtbaseHijax\Event\Event $event) {
     // sample handling of event data
     $params = $event->getParameters();
-    /* @var $user Tx_Extbase_Domain_Model_FrontendUser */
+    /* @var $user \TYPO3\CMS\Extbase\Domain\Model\FrontendUser */
     $user = $params['user'];
     ... 
 }
@@ -193,9 +193,9 @@ The first parameter of the connect method is event name, while the second is a P
 
 #### Conclusion
 
-Use `Tx_Extbase_SignalSlot_Dispatcher` in all occasions where output rendering does not need to be changed. SignalSlot mechanism is actually just a replacement for old TYPO3 hooks and doesn't enable what event-driven programming of web applications is all about.
+Use `TYPO3\CMS\Extbase\SignalSlot\Dispatcher` in all occasions where output rendering does not need to be changed. SignalSlot mechanism is actually just a replacement for old TYPO3 hooks and doesn't enable what event-driven programming of web applications is all about.
 
-Event-driven programming is widely used in graphical user interfaces because it has been adopted by most commercial widget toolkits as the model for interaction. By using `Tx_ExtbaseHijax_Event_Dispatcher` you can now use that in TYPO3 as well.
+Event-driven programming is widely used in graphical user interfaces because it has been adopted by most commercial widget toolkits as the model for interaction. By using `EssentialDots\ExtbaseHijax\Event\Dispatcher` you can now use that in TYPO3 as well.
 
 ### Events with ajaxifyed forms
 
@@ -247,7 +247,7 @@ Bolded is the code which is current API. Please note that this might change as w
 
 Usually (if you properly use TYPO3 framework), you would perform the redirect by using t3lib_utility_Http::redirect function. That's not good for extensions which use extbase_hijax anymore, as calling TYPO3 core's redirect function would redirect the AJAX response to a HTML page (while the JavaScript callback is expecting JSON or JSONP).
 
-In order to properly redirect from your extbase_hijax powered extension, please use `Tx_ExtbaseHijax_Utility_HTTP::redirect` instead. It is 100% compatible with `t3lib_utility_Http::redirect` and is aware of environment from which it is called (regular FE or AJAX call). In both cases, the execution is stopped and the user is being redirected.
+In order to properly redirect from your extbase_hijax powered extension, please use `EssentialDots\ExtbaseHijax\Utility\HTTP::redirect` instead. It is 100% compatible with `t3lib_utility_Http::redirect` and is aware of environment from which it is called (regular FE or AJAX call). In both cases, the execution is stopped and the user is being redirected.
 
 ### Implementing basic event support for TypoScript and 3rd party plugins
 
@@ -299,10 +299,10 @@ Why it this a part of extbase_hijax at all? We will implement automatic tracking
 Tracking of an object usage can be done either from the controller or from the view (which seems more logical). Sample of tracking from the controller:
 
 ```
-$this->objectManager->get('Tx_ExtbaseHijax_Tracking_Manager')->trackObjectOnPage($poll);
+$this->objectManager->get('EssentialDots\\ExtbaseHijax\\Tracking\\Manager')->trackObjectOnPage($poll);
 ```
 
-Here, $poll is instance of class which extends extbase's `Tx_Extbase_DomainObject_AbstractDomainObject`. This single call will register display of the $poll object on the given page, but only for the current hash. What does that mean? For example, on a single news page, there's a plugin which can display bunch of different news records, one at a time – or better say, one per page hash. These all records are shown on the same page, but with different page hashes. The function `trackObjectOnPage` has two more parameters which are optional:
+Here, $poll is instance of class which extends extbase's `TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject`. This single call will register display of the $poll object on the given page, but only for the current hash. What does that mean? For example, on a single news page, there's a plugin which can display bunch of different news records, one at a time – or better say, one per page hash. These all records are shown on the same page, but with different page hashes. The function `trackObjectOnPage` has two more parameters which are optional:
 
 * `$type` – can be 'hash' (default) or 'id'. Option 'hash' denotes that the object will be tracked only on the current page hash. Option 'id' denotes that the object will be tracked on all hashes for the current page.
 * `$hash` – a bit confusing parameter name. For $type='hash', this is an actual hash for which the record will be tracked (defaults to current hash if omitted). For $type='id', this is an id of the page where the record should be tracked. You usually don't need to set this parameter (if you want to track the object for the current page).
@@ -310,7 +310,7 @@ Here, $poll is instance of class which extends extbase's `Tx_Extbase_DomainObjec
 You can track an object in Fluid template as well. Sample:
 
 ```
-{namespace h=Tx_ExtbaseHijax_ViewHelpers}
+{namespace h=EssentialDots\ExtbaseHijax\ViewHelpers}
 <h:trackRecord object="{poll}" clearCacheOnAllHashesForCurrentPage="false">
     <f:render partial="Poll/Results" arguments="{poll: poll}"/>
 </h:trackRecord>
@@ -323,10 +323,10 @@ Attribute clearCacheOnAllHashesForCurrentPage is related to the $type parameter 
 In some occasions, you would like to track the entire repository instead of just single records. Such example would be list view – you probably need to clear the cache of that page when the new record is created (and which couldn't be tracked before due to it not existing before creation :D). This can be done at the moment only from the controller. Sample:
 
 ```
-$this->objectManager->get('Tx_ExtbaseHijax_Tracking_Manager')->trackRepositoryOnPage($this->pollRepository, 'hash');
+$this->objectManager->get('EssentialDots\\ExtbaseHijax\\Tracking\\Manager')->trackRepositoryOnPage($this->pollRepository, 'hash');
 ```
 
-The first parameter can be instance of a repository which implements Tx_Extbase_Persistence_RepositoryInterface. But it can be also an object extending Tx_Extbase_DomainObject_AbstractDomainObject. The function will know how to deduct the proper repository for an object (if object reference is passed). There are also two optional parameters, $type and $hash, which have the same purpose as in trackObjectOnPage function.
+The first parameter can be instance of a repository which implements `TYPO3\CMS\Extbase\Persistence\RepositoryInterface`. But it can be also an object extending `TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject`. The function will know how to deduct the proper repository for an object (if object reference is passed). There are also two optional parameters, $type and $hash, which have the same purpose as in trackObjectOnPage function.
 
 There is no viewhelper for this functionality at the moment.
 
@@ -356,13 +356,13 @@ Please note that there will be new levels implemented in future which will targe
 No matter what the cache invalidation level is set by the administrator, the developers should implement proper cache invalidation in their extensions. If you update a record, you have to explicitly invalidate cache for all related pages by calling:
 
 ```
-$this->objectManager->get('Tx_ExtbaseHijax_Tracking_Manager')->clearPageCacheForObject($poll);
+$this->objectManager->get('EssentialDots\\ExtbaseHijax\\Tracking\\Manager')->clearPageCacheForObject($poll);
 ```
 
 If you add or delete a record you need to invalidate cache for the whole repository. Sample code:
 
 ```
-$this->trackingManager = $this->objectManager->get('Tx_ExtbaseHijax_Tracking_Manager');
+$this->trackingManager = $this->objectManager->get('EssentialDots\\ExtbaseHijax\\Tracking\\Manager');
 ...
 $objectIdentifier = $this->trackingManager->getObjectIdentifierForRepository($table, $pid);
 $this->trackingManager->clearPageCacheForObjectIdentifier($objectIdentifier);

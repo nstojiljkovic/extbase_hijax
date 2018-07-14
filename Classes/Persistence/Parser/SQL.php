@@ -118,7 +118,7 @@ class SQL {
 	public static $startparens = array('{', '(');
 	public static $endparens = array('}', ')');
 	public static $tokens = array(',', ' ');
-	private $query = '';
+	private $query = [];
 
 	/**
 	 * constructor (placeholder only)

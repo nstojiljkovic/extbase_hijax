@@ -52,21 +52,32 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 	protected $configurationManager;
 
 	/**
+	 * Initialize arguments
+	 *
+	 * @return void
+	 */
+	public function initializeArguments() {
+		parent::initializeArguments();
+		$this->registerArgument('contextArguments', 'array', 'Context arguments', FALSE, []);
+		$this->overrideArgument('ajax', 'bool', 'TRUE if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
+		$this->registerArgument('cachedAjaxIfPossible', 'bool', 'if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
+		$this->registerArgument('forceContext', 'bool', 'if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, FALSE);
+	}
+
+	/**
 	 * Render the link.
 	 *
-	 * @param string $action Target action
-	 * @param array $arguments Arguments
-	 * @param array $contextArguments Context arguments
-	 * @param string $section The anchor to be added to the URI
-	 * @param string $format The requested format, e.g. ".html"
-	 * @param boolean $ajax TRUE if the URI should be to an AJAX widget, FALSE otherwise.
-	 * @param boolean $cachedAjaxIfPossible TRUE if the URI should be cached (with respect to non-cacheable actions)
-	 * @param boolean $forceContext TRUE if the controller/action/... should be passed
 	 * @return string The rendered link
-	 * @api
 	 */
-	public function render($action = NULL, $arguments = array(), $contextArguments = array(), $section = '', $format = '', $ajax = TRUE, $cachedAjaxIfPossible = TRUE, $forceContext = FALSE) {
-		$uri = $this->getWidgetUri($action, $arguments, $contextArguments, $ajax, $cachedAjaxIfPossible, $forceContext);
+	public function render() {
+		$uri = $this->getWidgetUri(
+			$this->arguments['action'],
+			$this->arguments['arguments'],
+			$this->arguments['contextArguments'],
+			$this->arguments['ajax'],
+			$this->arguments['cachedAjaxIfPossible'],
+			$this->arguments['forceContext']
+		);
 		$this->tag->addAttribute('href', $uri);
 		$this->tag->setContent($this->renderChildren());
 

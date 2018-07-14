@@ -541,15 +541,15 @@ abstract class BaseTestCase extends \Tx_Phpunit_Database_TestCase {
 		$dummyStub = $this->getMock($originalClassName, $methods, $arguments, $mockClassName, $callOriginalConstructor, $callOriginalClone, $callAutoload);
 		$mockImplementationClassName = get_class($dummyStub);
 
-		/* @var $extbaseObjectContainer Tx_Extbase_Object_Container_Container */
-		$extbaseObjectContainer = GeneralUtility::makeInstance('Tx_Extbase_Object_Container_Container');
+		/* @var $extbaseObjectContainer \TYPO3\CMS\Extbase\Object\Container\Container */
+		$extbaseObjectContainer = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\Container\Container::class);
 		$extbaseObjectContainer->registerImplementation($classNameForRegistration, $mockImplementationClassName);
 
 		$dummyStub->__phpunit_cleanup();
 		unset($dummyStub);
 
-		/* @var $objectManager Tx_Extbase_Object_ObjectManager */
-		$objectManager = GeneralUtility::makeInstance('Tx_Extbase_Object_ObjectManager');
+		/* @var $objectManager \TYPO3\CMS\Extbase\Object\ObjectManager */
+		$objectManager = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
 		$this->mockObjects[] = $objectManager->get($mockImplementationClassName);
 
 		return $mockImplementationClassName;

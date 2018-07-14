@@ -57,7 +57,6 @@ $extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Mvc\\Dispa
 $extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Storage\\BackendInterface', 'EssentialDots\\ExtbaseHijax\\Persistence\\Storage\\Typo3DbBackend');
 $extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\BackendInterface', 'EssentialDots\\ExtbaseHijax\\Persistence\\Backend');
 $extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Persistence\\QueryInterface', 'EssentialDots\\ExtbaseHijax\\Persistence\\Query');
-$extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Fluid\\Core\\Parser\\TemplateParser', 'EssentialDots\\ExtbaseHijax\\Core\\Parser\\TemplateParser');
 $extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ObjectStorageConverter', 'EssentialDots\\ExtbaseHijax\\Property\\TypeConverter\\ObjectStorageConverter');
 $extbaseObjectContainer->registerImplementation('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\Arguments', 'EssentialDots\\ExtbaseHijax\\MVC\\Controller\\Arguments');
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ObjectStorageConverter']['className'] = 'EssentialDots\\ExtbaseHijax\\Property\\TypeConverter\\ObjectStorageConverter';

@@ -147,7 +147,6 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 		$preventDirectOutput = FALSE;
 		$preventJsonEncode = FALSE;
 		try {
-			$this->initializeDatabase();
 			$this->hijaxEventDispatcher->promoteNextPhaseEvents();
 
 			$responses = array(
@@ -326,7 +325,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param \EssentialDots\ExtbaseHijax\Event\Listener $listener
 	 * @param bool $isCacheCallback
 	 * @return array
-	 * @throws \Tx_EdCache_Exception_PreventActionCaching
+	 * @throws \EssentialDots\EdCache\Exception\PreventActionCaching
 	 */
 	public function handleFrontendRequest($bootstrap, $configuration, $r, $request, $listener, $isCacheCallback = FALSE) {
 		$this->initialize();
@@ -398,9 +397,9 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 			'headers' => $response->getHeaders());
 
 		if (!$this->errorWhileConverting && $isCacheCallback && !$request->isCached() && $this->getCacheRepository()) {
-			error_log('Throwing Tx_EdCache_Exception_PreventActionCaching, did you missconfigure cacheable actions in Extbase?');
-			/* @var $preventActionCaching \Tx_EdCache_Exception_PreventActionCaching */
-			$preventActionCaching = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_EdCache_Exception_PreventActionCaching');
+			error_log('Throwing EssentialDots\\EdCache\\Exception\\PreventActionCaching, did you missconfigure cacheable actions in Extbase?');
+			/* @var $preventActionCaching \EssentialDots\EdCache\Exception\PreventActionCaching */
+			$preventActionCaching = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\EssentialDots\EdCache\Exception\PreventActionCaching::class);
 			$preventActionCaching->setResult($result);
 			throw $preventActionCaching;
 		}
@@ -500,15 +499,6 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
-	 * Initializes TYPO3 db.
-	 *
-	 * @return void
-	 */
-	protected function initializeDatabase() {
-		\TYPO3\CMS\Frontend\Utility\EidUtility::connectDB();
-	}
-
-	/**
 	 * Initializes the TCA.
 	 *
 	 * @return void
@@ -535,7 +525,6 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 		$tsfe->initUserGroups();
 		$tsfe->checkAlternativeIdMethods();
 		$tsfe->determineId();
-		$tsfe->getCompressedTCarray();
 		$tsfe->sys_page = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
 		$tsfe->initTemplate();
 		$tsfe->getConfigArray();
@@ -582,7 +571,9 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 			$this->stringify($r['arguments']);
 		}
 
-		$request->setArguments(\TYPO3\CMS\Core\Utility\GeneralUtility::array_merge_recursive_overrule($request->getArguments(), !is_array($r['arguments']) ? array() : $r['arguments']));
+		$args = $request->getArguments();
+		\TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule($args, !is_array($r['arguments']) ? array() : $r['arguments']);
+		$request->setArguments($args);
 
 		return $request;
 	}
