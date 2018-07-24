@@ -1,3 +1,11 @@
+Version: 3.0.9
+Subject: [TASK] TYPO3 8.7 compatibility update
+Date:    2018-07-24 14:24:28 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=c7f3735b3e3e3da6f8aa405e27a96f4c85d4df74
+
+Change-Id: I28a32ae5ad952dda294dc1d95999a045e924470e
+Related: #TP-4735
+
 Version: 3.0.8
 Subject: [TASK] TYPO3 8.7 caching framework related update
 Date:    2018-04-03 15:22:41 +0200
