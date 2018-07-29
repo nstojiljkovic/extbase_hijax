@@ -78,7 +78,7 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper {
 			$this->registerTagAttribute('novalidate', 'bool', 'Indicate that the form is not to be validated on submit.');
 		}
 		$this->registerArgument('resultTarget', 'string', 'Target where the results will be loaded');
-		$this->registerArgument('loaders', 'array', 'Target where the loader will be shown');
+		$this->registerArgument('loaders', 'string', 'Target where the loader will be shown');
 	}
 
 	/**

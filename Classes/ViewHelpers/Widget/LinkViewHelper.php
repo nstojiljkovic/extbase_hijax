@@ -58,8 +58,13 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
+		if (version_compare(TYPO3_version, '8.3', '<')) {
+			$this->registerArgument('arguments', 'array', 'Arguments', FALSE, []);
+			$this->registerArgument('ajax', 'bool', 'TRUE if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
+		} else {
+			$this->overrideArgument('ajax', 'bool', 'TRUE if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
+		}
 		$this->registerArgument('contextArguments', 'array', 'Context arguments', FALSE, []);
-		$this->overrideArgument('ajax', 'bool', 'TRUE if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
 		$this->registerArgument('cachedAjaxIfPossible', 'bool', 'if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
 		$this->registerArgument('forceContext', 'bool', 'if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, FALSE);
 	}
