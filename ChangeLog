@@ -1,3 +1,11 @@
+Version: 3.0.10
+Subject: [BUGFIX] Bring back form and widget.link viewhelpers for TYPO3 8.3 and lower
+Date:    2018-07-29 17:09:22 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=125b35708b2a5738bb5aa0611d3c73c6a4f08705
+
+Change-Id: Ifa1498d87286b99ee46f3a53a614faec6a6fad5b
+Related: #TP-4735
+
 Version: 3.0.9
 Subject: [TASK] TYPO3 8.7 compatibility update
 Date:    2018-07-24 14:24:28 +0200
