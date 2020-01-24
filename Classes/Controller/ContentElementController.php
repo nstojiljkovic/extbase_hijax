@@ -33,13 +33,13 @@ class ContentElementController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Event\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $hijaxEventDispatcher;
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Service\TypoScriptService
-	 * @inject
+	 * @var \TYPO3\CMS\Core\TypoScript\TypoScriptService
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $typoScriptService;
 

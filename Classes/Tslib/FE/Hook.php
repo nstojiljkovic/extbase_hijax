@@ -74,6 +74,8 @@ class Hook implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param array $params
 	 * @param \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $pObj
 	 * @return void
+	 * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+	 * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
 	 */
 	public function contentPostProcAll($params, $pObj) {
 		$this->contentPostProc($params, $pObj, 'all');
@@ -83,6 +85,8 @@ class Hook implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param array $params
 	 * @param \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $pObj
 	 * @return void
+	 * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+	 * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
 	 */
 	public function contentPostProcOutput($params, $pObj) {
 		$this->contentPostProc($params, $pObj, 'output');
@@ -93,6 +97,7 @@ class Hook implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $pObj
 	 * @param string $hookType
 	 * @return void
+	 * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
 	 */
 	protected function contentPostProc($params, $pObj, $hookType) {
 		if ($this->extensionConfiguration->shouldIncludeEofe() && !$this->extensionConfiguration->hasIncludedEofe()) {
@@ -103,6 +108,7 @@ class Hook implements \TYPO3\CMS\Core\SingletonInterface {
 				$pObj->tmpl->setup['config.']['extbase_hijax.']['eofe.']
 			);
 
+			// @extensionScannerIgnoreLine
 			$pObj->content = str_ireplace('</body>', $eofe . '</body>', $pObj->content);
 		}
 
@@ -114,6 +120,7 @@ class Hook implements \TYPO3\CMS\Core\SingletonInterface {
 				$pObj->tmpl->setup['config.']['extbase_hijax.']['sofe.']
 			);
 
+			// @extensionScannerIgnoreLine
 			$pObj->content = preg_replace('/<body([^>]*)>/msU', '<body$1>' . $sofe, $pObj->content);
 		}
 
@@ -126,9 +133,11 @@ class Hook implements \TYPO3\CMS\Core\SingletonInterface {
 			if (count($matches)) {
 				$classes = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(' ', $matches[2], TRUE);
 				if (!in_array($bodyClass, $classes)) {
+					// @extensionScannerIgnoreLine
 					$pObj->content = preg_replace('/<body([^>]*)class="([^>]*)">/msU', '<body$1class="$2 ' . $bodyClass . '">', $pObj->content, -1, $count);
 				}
 			} else {
+				// @extensionScannerIgnoreLine
 				$pObj->content = preg_replace('/<body([^>]*)>/msU', '<body$1 class="' . $bodyClass . '">', $pObj->content, -1, $count);
 			}
 			if ($count) {
@@ -167,11 +176,13 @@ class Hook implements \TYPO3\CMS\Core\SingletonInterface {
 			if (count($this->nonCacheableFooterCode)) {
 				ksort($this->nonCacheableFooterCode);
 
+				// @extensionScannerIgnoreLine
 				$pObj->content = $this->strLreplace('</body>', '<!-- x123456 -->' . implode('', $this->nonCacheableFooterCode) . '</body>', $pObj->content);
 			}
 			if (count($this->nonCacheableHeaderCode)) {
 				ksort($this->nonCacheableHeaderCode);
 
+				// @extensionScannerIgnoreLine
 				$pObj->content = $this->strLreplace('</head>', '<!-- x123456 -->' . implode('', $this->nonCacheableHeaderCode) . '</head>', $pObj->content);
 			}
 		}

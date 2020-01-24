@@ -33,13 +33,13 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Event\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $hijaxEventDispatcher;
 
@@ -85,6 +85,8 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper {
 	 * Render the form.
 	 *
 	 * @return string
+	 * @throws \TYPO3\CMS\Extbase\Exception
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	public function render() {
 		$this->renderHijaxDataAttributes($this->arguments['action'], $this->arguments['arguments'], $this->arguments['controller'], $this->arguments['extensionName'], $this->arguments['pluginName']);
@@ -120,9 +122,10 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper {
 	 * @param NULL $controller
 	 * @param NULL $extensionName
 	 * @param NULL $pluginName
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	protected function renderHijaxDataAttributes($action = NULL, array $arguments = array(), $controller = NULL, $extensionName = NULL, $pluginName = NULL) {
-		$request = $this->controllerContext->getRequest();
+		$request = $this->renderingContext->getControllerContext()->getRequest();
 
 		$this->tag->addAttribute('data-hijax-element-type', 'form');
 		$this->tag->addAttribute('class', trim($this->arguments['class'] . ' hijax-element'));

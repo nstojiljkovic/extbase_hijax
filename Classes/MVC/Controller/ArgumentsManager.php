@@ -63,7 +63,7 @@ class ArgumentsManager implements SingletonInterface {
 
 		foreach ($this->arguments as $arguments) {
 			/** @var Arguments $arguments */
-			if ($arguments->getValidationResults()->hasErrors()) {
+			if ($arguments->validate()->hasErrors()) {
 				$result = TRUE;
 				break;
 			}

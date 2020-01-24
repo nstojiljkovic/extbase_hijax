@@ -46,6 +46,7 @@ class PDFConverter extends \EssentialDots\ExtbaseHijax\HTMLConverter\AbstractCon
 				$failedConversionException = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('EssentialDots\\ExtbaseHijax\\HTMLConverter\\FailedConversionException');
 				$failedConversionException->setError($error);
 				$failedConversionException->setInput($response);
+				// @extensionScannerIgnoreLine
 				$failedConversionException->setOutput($output);
 				$failedConversionException->setReturnValue($retVal);
 				throw $failedConversionException;

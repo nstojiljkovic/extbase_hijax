@@ -29,11 +29,11 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class AjaxFunctionViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class AjaxFunctionViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Service\JSBuilder
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $jsBuilder;
 
@@ -46,6 +46,7 @@ class AjaxFunctionViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
 	 * @param string $format
 	 * @param string $section
 	 * @return string
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	public function render($action = NULL, array $arguments = array(), $controller = NULL, $extension = NULL, $plugin = NULL, $format = '', $section = 'footer') {
 		return $this->jsBuilder->getAjaxFunction($action, $arguments, $controller, $extension, $plugin, $format, $section);

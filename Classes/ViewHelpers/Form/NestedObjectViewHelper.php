@@ -29,7 +29,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers\Form;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers\Form
  */
-class NestedObjectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class NestedObjectViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var array
@@ -43,7 +43,7 @@ class NestedObjectViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Property\TypeConverterService\ObjectStorageMappingService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $objectStorageMappingService;
 

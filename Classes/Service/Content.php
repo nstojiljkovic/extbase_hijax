@@ -101,7 +101,7 @@ class Content implements \TYPO3\CMS\Core\SingletonInterface {
 			// make sure that the actual controller action IS NOT executed
 			$this->setExecuteExtbasePlugins(FALSE);
 			$contentObject->start($data, $table);
-			$dummyContent = $contentObject->RECORDS(array(
+			$dummyContent = $contentObject->cObjGetSingle('RECORDS', array(
 				'source' => $uid,
 				'tables' => $table
 			));
@@ -130,7 +130,7 @@ class Content implements \TYPO3\CMS\Core\SingletonInterface {
 		if ($loadContentFromTypoScript) {
 			// make sure that the actual controller action IS NOT executed
 			$this->setExecuteExtbasePlugins(FALSE);
-			$dummyContent = $contentObject->USER(array(
+			$dummyContent = $contentObject->cObjGetSingle('USER', array(
 				'extensionName' => 'ExtbaseHijax',
 				'pluginName' => 'Pi1',
 				'userFunc' => 'TYPO3\\CMS\\Extbase\\Core\\Bootstrap->run',
@@ -155,6 +155,7 @@ class Content implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * @param $fallbackTypoScriptConfiguration
 	 * @return \EssentialDots\ExtbaseHijax\Event\Listener
+	 * @throws \Exception
 	 */
 	public function generateListenerCacheForTypoScriptFallback($fallbackTypoScriptConfiguration) {
 
@@ -181,11 +182,13 @@ class Content implements \TYPO3\CMS\Core\SingletonInterface {
 	public function processIntScripts(&$content) {
 		$tsfe = &$GLOBALS['TSFE'];
 		/* @var $tsfe \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController */
+		// @extensionScannerIgnoreLine
 		$tsfe->content = $content;
 		if (!$tsfe->config['INTincScript']) {
 			$tsfe->config['INTincScript'] = array();
 		}
 		$tsfe->INTincScript();
+		// @extensionScannerIgnoreLine
 		$content = $tsfe->content;
 	}
 
@@ -274,6 +277,7 @@ class Content implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @param string $typoscriptObjectPath
+	 * @return mixed
 	 * @throws \Exception
 	 */
 	public function isAllowedTypoScriptPath($typoscriptObjectPath) {

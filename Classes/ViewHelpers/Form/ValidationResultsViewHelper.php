@@ -29,11 +29,11 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers\Form;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers\Form
  */
-class ValidationResultsViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class ValidationResultsViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Property\TypeConverterService\ObjectStorageMappingService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $objectStorageMappingService;
 
@@ -47,7 +47,7 @@ class ValidationResultsViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 	 */
 	public function render($for = '', $as = 'validationResults') {
 		$for = $this->getNameWithoutPrefix();
-		$validationResults = $this->controllerContext->getRequest()->getOriginalRequestMappingResults();
+		$validationResults = $this->renderingContext->getControllerContext()->getRequest()->getOriginalRequestMappingResults();
 		if ($validationResults !== NULL && $for !== '') {
 			$validationResults = $validationResults->forProperty($for);
 		}

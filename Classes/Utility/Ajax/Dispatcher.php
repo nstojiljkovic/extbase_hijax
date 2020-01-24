@@ -23,7 +23,6 @@ namespace EssentialDots\ExtbaseHijax\Utility\Ajax;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use EssentialDots\EdCache\Domain\Repository\CacheRepository;
 use EssentialDots\ExtbaseHijax\Event\Listener;
 use EssentialDots\ExtbaseHijax\MVC\Controller\ArgumentsManager;
 use TYPO3\CMS\Core\Cache\CacheManager;
@@ -120,7 +119,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
-	 * @return CacheRepository
+	 * @return \EssentialDots\EdCache\Domain\Repository\CacheRepository
 	 */
 	protected function getCacheRepository() {
 		if ($this->cacheRepository != NULL) {
@@ -206,6 +205,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 					/** @var Listener $listener */
 					$configuration = $listener->getConfiguration();
 					$request = $listener->getRequest();
+					// @extensionScannerIgnoreLine
 					$bootstrap->cObj = $listener->getContentObject();
 					$this->checkAllowedControllerActions($configuration, $r);
 				} else {
@@ -325,7 +325,11 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param \EssentialDots\ExtbaseHijax\Event\Listener $listener
 	 * @param bool $isCacheCallback
 	 * @return array
-	 * @throws \EssentialDots\EdCache\Exception\PreventActionCaching
+	 * @throws \EssentialDots\ExtbaseHijax\MVC\Exception\RedirectAction
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InfiniteLoopException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidActionNameException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidControllerNameException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidExtensionNameException
 	 */
 	public function handleFrontendRequest($bootstrap, $configuration, $r, $request, $listener, $isCacheCallback = FALSE) {
 		$this->initialize();
@@ -368,6 +372,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 
 			/* @var $tsfe \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController */
 			$tsfe = &$GLOBALS['TSFE'];
+			// @extensionScannerIgnoreLine
 			$tsfe->content = $response->getContent();
 
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-all'])) {
@@ -384,6 +389,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 				}
 			}
 
+			// @extensionScannerIgnoreLine
 			$response->setContent($tsfe->content);
 		} catch (\EssentialDots\ExtbaseHijax\HTMLConverter\FailedConversionException $e) {
 			$this->errorWhileConverting = TRUE;
@@ -411,6 +417,10 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param $responses
 	 * @param $eventsToListen
 	 * @param bool $processOriginal
+	 * @throws \EssentialDots\ExtbaseHijax\MVC\Exception\RedirectAction
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InfiniteLoopException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidActionNameException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidControllerNameException
 	 */
 	protected function parseAndRunEventListeners(&$responses, $eventsToListen, $processOriginal = TRUE) {
 		if ($processOriginal) {
@@ -435,6 +445,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 					if ($listener) {
 						$configuration = $listener->getConfiguration();
 						$bootstrap = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Core\\Bootstrap');
+						// @extensionScannerIgnoreLine
 						$bootstrap->cObj = $listener->getContentObject();
 						$bootstrap->initialize($configuration);
 
@@ -470,6 +481,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @param \TYPO3\CMS\Extbase\Mvc\Web\Response $response
+	 * @throws \EssentialDots\ExtbaseHijax\MVC\Exception\RedirectAction
 	 */
 	protected function parseHeaders($response) {
 		// detect redirects
@@ -493,24 +505,16 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	public function initialize() {
 		if (!$this->initializedTypoScriptFrontEnd) {
 			$this->initializedTypoScriptFrontEnd = TRUE;
-			$this->initializeTca();
 			$this->initializeTsfe();
 		}
-	}
-
-	/**
-	 * Initializes the TCA.
-	 *
-	 * @return void
-	 */
-	protected function initializeTca() {
-		\TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
 	}
 
 	/**
 	 * Initializes TSFE.
 	 *
 	 * @return void
+	 * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+	 * @throws \TYPO3\CMS\Core\Http\ImmediateResponseException
 	 */
 	protected function initializeTsfe() {
 		/* @var $tsfe \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController */
@@ -521,18 +525,19 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 			\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('type'));
 		$GLOBALS['TSFE'] = &$tsfe;
 
+		// @extensionScannerIgnoreLine
 		$tsfe->initFEuser();
 		$tsfe->initUserGroups();
+		// @extensionScannerIgnoreLine
 		$tsfe->checkAlternativeIdMethods();
 		$tsfe->determineId();
 		$tsfe->sys_page = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
-		$tsfe->initTemplate();
 		$tsfe->getConfigArray();
 		$tsfe->settingLanguage();
 		$tsfe->settingLocale();
 		$tsfe->calculateLinkVars();
 		$tsfe->newCObj();
-		\TYPO3\CMS\Frontend\Page\PageGenerator::pagegenInit();
+		$tsfe->preparePageContentGeneration();
 	}
 
 	/**
@@ -551,6 +556,9 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param array $r
 	 * @param \TYPO3\CMS\Extbase\Mvc\Web\Request $request
 	 * @return \TYPO3\CMS\Extbase\Mvc\Request
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidActionNameException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidControllerNameException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidExtensionNameException
 	 */
 	protected function buildRequest($r, &$request = NULL) {
 

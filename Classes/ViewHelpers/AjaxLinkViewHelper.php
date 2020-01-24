@@ -1,6 +1,9 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\ViewHelpers;
 
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,23 +32,23 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class AjaxLinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class AjaxLinkViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\MVC\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $mvcDispatcher;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Service\ExtensionService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $extensionService;
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Service\JSBuilder
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $jsBuilder;
 
@@ -57,8 +60,9 @@ class AjaxLinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
 	 * @param string $pluginName
 	 * @param string $format
 	 * @param int $pageUid
-	 *
 	 * @return string
+	 * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	public function render($action = NULL, array $arguments = array(), $controller = NULL, $extensionName = NULL, $pluginName = NULL, $format = '', $pageUid = 0) {
 		$request = $this->mvcDispatcher->getCurrentRequest();
@@ -87,7 +91,8 @@ class AjaxLinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
 		$additionalArguments = array();
 		$this->hA('r[0][arguments]', $arguments, $additionalArguments);
 
-		$language = intval($GLOBALS['TSFE'] ? $GLOBALS['TSFE']->sys_language_content : 0);
+		$context = GeneralUtility::makeInstance(Context::class);
+		$language = intval($context->getPropertyFromAspect('language', 'contentId') ?: 0);
 		$additionalParams = '&r[0][extension]=' . $extensionName .
 							'&r[0][plugin]=' . $pluginName .
 							'&r[0][controller]=' . $controller .

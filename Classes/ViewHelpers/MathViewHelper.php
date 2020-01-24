@@ -29,7 +29,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class MathViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class MathViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @return void

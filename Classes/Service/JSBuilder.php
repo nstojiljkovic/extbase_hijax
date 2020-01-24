@@ -32,31 +32,31 @@ namespace EssentialDots\ExtbaseHijax\Service;
 class JSBuilder implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\MVC\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $mvcDispatcher;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Event\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $hijaxEventDispatcher;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Service\ExtensionService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $extensionService;
 
 	/**
 	 * @var \TYPO3\CMS\Core\Page\PageRenderer
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $pageRenderer;
 
@@ -66,6 +66,7 @@ class JSBuilder implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return boolean
 	 */
 	protected function isCached() {
+		// @extensionScannerIgnoreLine
 		$userObjType = $this->configurationManager->getContentObject()->getUserObjectType();
 		return ($userObjType !== \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::OBJECTTYPE_USER_INT);
 	}
@@ -81,6 +82,7 @@ class JSBuilder implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param string $format
 	 * @param string $section
 	 * @return string
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	public function getAjaxFunction($action = NULL, array $arguments = array(), $controller = NULL, $extensionName = NULL, $pluginName = NULL, $format = '', $section = 'footer') {
 		// current element needs to have additional logic...

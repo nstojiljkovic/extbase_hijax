@@ -1,6 +1,8 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\ViewHelpers\Widget;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /***************************************************************
@@ -35,19 +37,19 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Service\ExtensionService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $extensionService;
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Event\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $hijaxEventDispatcher;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
@@ -73,6 +75,8 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 	 * Render the link.
 	 *
 	 * @return string The rendered link
+	 * @throws \TYPO3\CMS\EXTBASE\Security\Exception\InvalidArgumentForHashGenerationException
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	public function render() {
 		$uri = $this->getWidgetUri(
@@ -99,11 +103,13 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 	 * @param bool $cachedAjaxIfPossible
 	 * @param bool $forceContext
 	 * @return string
+	 * @throws \TYPO3\CMS\EXTBASE\Security\Exception\InvalidArgumentForHashGenerationException
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	protected function getWidgetUri($action = NULL, array $arguments = array(), array $contextArguments = array(), $ajax = TRUE, $cachedAjaxIfPossible = TRUE, $forceContext = FALSE) {
 		$this->hijaxEventDispatcher->setIsHijaxElement(TRUE);
 
-		$request = $this->controllerContext->getRequest();
+		$request = $this->renderingContext->getControllerContext()->getRequest();
 		/* @var $widgetContext \EssentialDots\ExtbaseHijax\Core\Widget\WidgetContext */
 		$widgetContext = $request->getWidgetContext();
 		$tagAttributes = array();
@@ -156,7 +162,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 			$variableContainer = $widgetContext->getViewHelperChildNodeRenderingContext()->getViewHelperVariableContainer();
 			if ($variableContainer->exists('TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper', 'formFieldNames')) {
 				$formFieldNames = $variableContainer->get('TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper', 'formFieldNames');
-				$mvcPropertyMappingConfigurationService = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\MvcPropertyMappingConfigurationService');
+				$mvcPropertyMappingConfigurationService = GeneralUtility::makeInstance(ObjectManager::class)->get('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\MvcPropertyMappingConfigurationService');
 				/* @var $mvcPropertyMappingConfigurationService \TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService */
 				$requestHash = $mvcPropertyMappingConfigurationService->generateTrustedPropertiesToken($formFieldNames, $pluginNamespace);
 				$requestArguments['__trustedProperties'] = $requestHash;
@@ -173,6 +179,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 			$tagAttributes['data-hijax-settings'] = $listener->getId();
 		}
 
+		// @extensionScannerIgnoreLine
 		$cachedAjaxIfPossible = $cachedAjaxIfPossible ? $this->configurationManager->getContentObject()->getUserObjectType() != ContentObjectRenderer::OBJECTTYPE_USER_INT : FALSE;
 
 		if ($cachedAjaxIfPossible) {
@@ -193,9 +200,9 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 			$this->tag->addAttribute($tagAttribute, $attributeValue);
 		}
 
-		$uriBuilder = $this->controllerContext->getUriBuilder();
+		$uriBuilder = $this->renderingContext->getControllerContext()->getUriBuilder();
 
-		$argumentPrefix = $this->controllerContext->getRequest()->getArgumentPrefix();
+		$argumentPrefix = $this->renderingContext->getControllerContext()->getRequest()->getArgumentPrefix();
 
 		if ($this->hasArgument('format') && $this->arguments['format'] !== '') {
 			$requestArguments['format'] = $this->arguments['format'];

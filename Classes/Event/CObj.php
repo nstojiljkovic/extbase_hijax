@@ -117,7 +117,7 @@ class CObj {
 	}
 
 	/**
-	 * @param multitype : $data
+	 * @param mixed $data
 	 */
 	public function setData($data) {
 		$this->data = $data;

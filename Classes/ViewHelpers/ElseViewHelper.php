@@ -29,7 +29,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class ElseViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class ElseViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @return string the rendered string

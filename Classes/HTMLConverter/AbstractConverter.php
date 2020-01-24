@@ -33,7 +33,7 @@ abstract class AbstractConverter implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Configuration\ExtensionInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $extensionConfiguration;
 

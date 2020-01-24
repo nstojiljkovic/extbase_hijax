@@ -1,6 +1,8 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\Lock;
 
+use Psr\Log\LoggerAwareTrait;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +31,9 @@ namespace EssentialDots\ExtbaseHijax\Lock;
  *
  * @package EssentialDots\ExtbaseHijax\Lock
  */
-class LockManager implements \TYPO3\CMS\Core\SingletonInterface {
+class LockManager implements \TYPO3\CMS\Core\SingletonInterface, \Psr\Log\LoggerAwareInterface {
+
+	use LoggerAwareTrait;
 
 	/**
 	 * @var array
@@ -93,7 +97,8 @@ class LockManager implements \TYPO3\CMS\Core\SingletonInterface {
 				}
 			}
 		} catch (\Exception $e) {
-			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Locking: Failed to acquire lock: ' . $e->getMessage(), 'cms', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
+			// @extensionScannerIgnoreLine
+			$this->logger->error('Locking: Failed to acquire lock: ' . $e->getMessage());
 			// If locking fails, return with FALSE and continue without locking
 			$success = FALSE;
 		}

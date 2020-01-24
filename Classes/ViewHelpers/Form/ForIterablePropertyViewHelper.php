@@ -41,18 +41,18 @@ class ForIterablePropertyViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Form\Ab
 	 * @param int $fromIndex
 	 * @param int $toIndex
 	 * @return string Rendered string
-	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
-	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException
+	 * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
+	 * @throws \TYPO3Fluid\Fluid\Core\Exception
 	 */
 	public function render($as, $key = '', $reverse = FALSE, $iteration = NULL, $fromIndex = -1, $toIndex = -1) {
-		$templateVariableContainer = $this->renderingContext->getTemplateVariableContainer();
+		$variableProvider = $this->renderingContext->getVariableProvider();
 		$propertyValue = $this->getValue(FALSE);
 
 		if ($propertyValue === NULL) {
 			return '';
 		}
 		if (is_object($propertyValue) && !$propertyValue instanceof \Traversable) {
-			throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('ForViewHelper only supports arrays and objects implementing Traversable interface', 1248728393);
+			throw new \TYPO3Fluid\Fluid\Core\ViewHelper\Exception('ForViewHelper only supports arrays and objects implementing Traversable interface', 1248728393);
 		}
 
 		if ($this->arguments['reverse'] === TRUE) {
@@ -71,16 +71,16 @@ class ForIterablePropertyViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Form\Ab
 		$output = '';
 
 		foreach ($propertyValue as $keyValue => $singleElement) {
-			$templateVariableContainer->add($this->arguments['as'], $singleElement);
+			$variableProvider->add($this->arguments['as'], $singleElement);
 			if ($this->arguments['key'] !== '') {
-				$templateVariableContainer->add($this->arguments['key'], $keyValue);
+				$variableProvider->add($this->arguments['key'], $keyValue);
 			}
 			if ($this->arguments['iteration'] !== NULL) {
 				$iterationData['isFirst'] = $iterationData['cycle'] === 1;
 				$iterationData['isLast'] = $iterationData['cycle'] === $iterationData['total'];
 				$iterationData['isEven'] = $iterationData['cycle'] % 2 === 0;
 				$iterationData['isOdd'] = !$iterationData['isEven'];
-				$templateVariableContainer->add($this->arguments['iteration'], $iterationData);
+				$variableProvider->add($this->arguments['iteration'], $iterationData);
 				$iterationData['cycle']++;
 			}
 			$iterationData['index']++;
@@ -91,12 +91,12 @@ class ForIterablePropertyViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Form\Ab
 				//$renderChildrenClosure();?
 				$output .= $this->renderChildren();
 			}
-			$templateVariableContainer->remove($this->arguments['as']);
+			$variableProvider->remove($this->arguments['as']);
 			if ($this->arguments['key'] !== '') {
-				$templateVariableContainer->remove($this->arguments['key']);
+				$variableProvider->remove($this->arguments['key']);
 			}
 			if ($this->arguments['iteration'] !== NULL) {
-				$templateVariableContainer->remove($this->arguments['iteration']);
+				$variableProvider->remove($this->arguments['iteration']);
 			}
 		}
 		return $output;

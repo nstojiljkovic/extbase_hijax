@@ -5,6 +5,7 @@ if (!defined('TYPO3_MODE')) {
 
 $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-all'][] = 'EssentialDots\\ExtbaseHijax\\Tslib\\FE\\Hook->contentPostProcAll';
 $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = 'EssentialDots\\ExtbaseHijax\\Tslib\\FE\\Hook->contentPostProcOutput';
+// @extensionScannerIgnoreLine
 $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['initFEuser'][] = 'EssentialDots\\ExtbaseHijax\\Tslib\\FE\\Hook->initFEuser';
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(

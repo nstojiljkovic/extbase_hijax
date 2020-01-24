@@ -79,6 +79,7 @@ class HTTP implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param string $url The target URL to redirect to
 	 * @param string $httpStatus An optional HTTP status header. Default is 'HTTP/1.1 303 See Other'
 	 * @return void
+	 * @throws \EssentialDots\ExtbaseHijax\MVC\Exception\RedirectAction
 	 */
 	public static function redirect($url, $httpStatus = \TYPO3\CMS\Core\Utility\HttpUtility::HTTP_STATUS_303) {
 		/* @var $httpServiceInstance \EssentialDots\ExtbaseHijax\Utility\HTTP */

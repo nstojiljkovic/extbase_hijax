@@ -34,7 +34,7 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $signalSlotDispatcher;
 
@@ -58,14 +58,14 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 				return;
 			}
 		}
-		$dataMap = $this->dataMapper->getDataMap(get_class($object));
+		$dataMap = $this->dataMapFactory->buildDataMap(get_class($object));
 		$row = array();
 		$this->addCommonFieldsToRow($object, $row);
 		if ($dataMap->getLanguageIdColumnName() !== NULL) {
 			$row[$dataMap->getLanguageIdColumnName()] = -1;
 		}
 
-		$dataMap = $this->dataMapper->getDataMap(get_class($object));
+		$dataMap = $this->dataMapFactory->buildDataMap(get_class($object));
 		$properties = $object->_getProperties();
 		foreach ($properties as $propertyName => $propertyValue) {
 			if (!$dataMap->isPersistableProperty($propertyName) || $this->propertyValueIsLazyLoaded($propertyValue)) {
@@ -97,7 +97,7 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 		}
 
 		if ($parentObject !== NULL && $parentPropertyName) {
-			$parentColumnDataMap = $this->dataMapper->getDataMap(get_class($parentObject))->getColumnMap($parentPropertyName);
+			$parentColumnDataMap = $this->dataMapFactory->buildDataMap(get_class($parentObject))->getColumnMap($parentPropertyName);
 			$relationTableMatchFields = $parentColumnDataMap->getRelationTableMatchFields();
 			if (is_array($relationTableMatchFields)) {
 				$row = array_merge($relationTableMatchFields, $row);
@@ -141,43 +141,6 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 			$this->referenceIndex->updateRefIndexTable($dataMap->getTableName(), $uid);
 		}
 		$this->session->registerObject($object, $uid);
-
-//		if ($object->getUid() >= 1) {
-//			/*
-//			 * Check if update operation will be called for this object
-//			 * (depending on the properties)
-//			 * @see \TYPO3\CMS\Extbase\Persistence\Generic\Backend::persistObject
-//			 */
-//			$dataMap = $this->dataMapper->getDataMap(get_class($object));
-//			$properties = $object->_getProperties();
-//			$row = array();
-//			foreach ($properties as $propertyName => $propertyValue) {
-//				if (!$propertyValue || !is_object($propertyValue) || !$dataMap->isPersistableProperty($propertyName) || $this->propertyValueIsLazyLoaded($propertyValue)) {
-//					continue;
-//				}
-//				$columnMap = $dataMap->getColumnMap($propertyName);
-//				if ($propertyValue instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
-//					if ($object->_isNew() || $propertyValue->_isDirty()) {
-//						$row[$columnMap->getColumnName()] = TRUE;
-//					}
-//				} elseif ($propertyValue instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface) {
-//					if ($object->_isDirty($propertyName)) {
-//						$row[$columnMap->getColumnName()] = TRUE;
-//					}
-//					$queue[] = $propertyValue;
-//				} elseif ($object->_isNew() || $object->_isDirty($propertyName)) {
-//					$row[$columnMap->getColumnName()] = TRUE;
-//				}
-//			}
-//
-//			if (count($row) > 0) {
-//				$objectHash = spl_object_hash($object);
-//				$this->pendingInsertObjects[$objectHash] = $object;
-//			} else {
-//				$this->signalSlotDispatcher->dispatch('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Backend', 'afterInsertObjectHijax', array('object' => $object));
-//				$this->sessionAddedObjects->attach($object);
-//			}
-//		}
 	}
 
 	/**
@@ -186,10 +149,12 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object The object to be updated
 	 * @param array $row Row to be stored
 	 * @return bool
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
 	 */
 	protected function updateObject(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, array $row) {
 		//////////////////// ORIGINAL START //////////////////////
-		$dataMap = $this->dataMapper->getDataMap(get_class($object));
+		$dataMap = $this->dataMapFactory->buildDataMap(get_class($object));
 		$this->addCommonFieldsToRow($object, $row);
 		$row['uid'] = $object->getUid();
 		if ($dataMap->getLanguageIdColumnName() !== NULL) {
@@ -239,9 +204,11 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object The object to be removed from the storage
 	 * @param boolean $markAsDeleted Wether to just flag the row deleted (default) or really delete it
 	 * @return void
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
 	 */
 	protected function removeEntity(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, $markAsDeleted = TRUE) {
-		$dataMap = $this->dataMapper->getDataMap(get_class($object));
+		$dataMap = $this->dataMapFactory->buildDataMap(get_class($object));
 		$tableName = $dataMap->getTableName();
 		if ($markAsDeleted === TRUE && $dataMap->getDeletedFlagColumnName() !== NULL) {
 			$deletedColumnName = $dataMap->getDeletedFlagColumnName();

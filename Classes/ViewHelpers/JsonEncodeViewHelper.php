@@ -29,7 +29,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class JsonEncodeViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class JsonEncodeViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @return string

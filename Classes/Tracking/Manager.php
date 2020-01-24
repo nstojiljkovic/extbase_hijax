@@ -1,6 +1,7 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\Tracking;
 
+use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -32,7 +33,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @package EssentialDots\ExtbaseHijax\Tracking
  */
-class Manager implements \TYPO3\CMS\Core\SingletonInterface {
+class Manager implements \TYPO3\CMS\Core\SingletonInterface, \Psr\Log\LoggerAwareInterface {
+
+	use LoggerAwareTrait;
 
 	const SIGNAL_PreTrackRepositoryOnPage = 'preTrackRepositoryOnPage';
 	const SIGNAL_PreTrackObjectOnPage = 'preTrackObjectOnPage';
@@ -86,6 +89,7 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Constructor
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
 	 */
 	public function __construct() {
 		$this->fe = $GLOBALS['TSFE'];
@@ -105,6 +109,8 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface {
 	 * Clears cache of pages where objects are shown
 	 *
 	 * @param array $objects
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
 	 */
 	public function clearPageCacheForObjects($objects) {
 		if ($objects) {
@@ -192,6 +198,9 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param string $type 'hash' (for only one hash) or 'id' (for complete page cache of a page, for all hash combinations)
 	 * @param mixed $hash Hash or page id (depending on the type) for which the object display will be associated
 	 * @return void
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
 	 */
 	public function trackRepositoryOnPage($object = NULL, $type = 'hash', $hash = FALSE) {
 		if ($object && !$this->ajaxDispatcher->getIsActive()) {
@@ -273,9 +282,13 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface {
 	 * Tracks display of an object on a page
 	 *
 	 * @param \TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject $object Object to use
-	 * @param mixed $hash Hash or page id (depending on the type) for which the object display will be associated
 	 * @param string $type 'hash' (for only one hash) or 'id' (for complete page cache of a page, for all hash combinations)
+	 * @param mixed $hash Hash or page id (depending on the type) for which the object display will be associated
 	 * @return void
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
 	 */
 	public function trackObjectOnPage(\TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject $object = NULL, $type = 'hash', $hash = FALSE) {
 
@@ -338,6 +351,7 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface {
 	 *
 	 * @param \TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject $object
 	 * @return string
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
 	 */
 	public function getObjectIdentifierForObject(\TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject $object = NULL) {
 		$objectIdentifier = FALSE;
@@ -415,7 +429,8 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface {
 				}
 			}
 		} catch (\Exception $e) {
-			GeneralUtility::sysLog('Locking: Failed to acquire lock: ' . $e->getMessage(), 'cms', GeneralUtility::SYSLOG_SEVERITY_ERROR);
+			// @extensionScannerIgnoreLine
+			$this->logger->error('Locking: Failed to acquire lock: ' . $e->getMessage());
 			// If locking fails, return with FALSE and continue without locking
 			$success = FALSE;
 		}

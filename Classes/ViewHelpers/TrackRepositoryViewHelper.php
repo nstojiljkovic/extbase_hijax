@@ -29,11 +29,11 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class TrackRepositoryViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class TrackRepositoryViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Tracking\Manager
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $trackingManager;
 
@@ -41,6 +41,9 @@ class TrackRepositoryViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstrac
 	 * @param mixed $object Object to use
 	 * @param boolean $clearCacheOnAllHashesForCurrentPage Clear cache on all hashes for current page
 	 * @return string the rendered string
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
 	 */
 	public function render($object = NULL, $clearCacheOnAllHashesForCurrentPage = FALSE) {
 		if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject) {

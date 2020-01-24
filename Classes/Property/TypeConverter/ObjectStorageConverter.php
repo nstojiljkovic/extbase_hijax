@@ -33,7 +33,7 @@ class ObjectStorageConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\O
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Property\TypeConverterService\ObjectStorageMappingService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $objectStorageMappingService;
 

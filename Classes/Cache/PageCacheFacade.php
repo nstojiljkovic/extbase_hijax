@@ -55,6 +55,7 @@ class PageCacheFacade implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * constructor
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
 	 */
 	public function __construct() {
 		$this->queuedPageHashs = array();

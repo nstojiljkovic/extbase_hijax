@@ -131,7 +131,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 				$events[] = $event;
 				if ($callback) {
 					if (is_string($callback)) {
-						\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($callback, $event, $this, $checkPrefix = FALSE);
+						\TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($callback, $event, $this);
 					} else {
 						call_user_func($callback, $event);
 					}
@@ -409,6 +409,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface {
 			if ($listener) {
 				/* @var $bootstrap \TYPO3\CMS\Extbase\Core\Bootstrap */
 				$bootstrap = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Core\\Bootstrap');
+				// @extensionScannerIgnoreLine
 				$bootstrap->cObj = $listener->getContentObject();
 				$bootstrap->initialize($listener->getConfiguration());
 				$request = $listener->getRequest();

@@ -33,7 +33,7 @@ class OrderingsViewHelper extends \EssentialDots\ExtbaseHijax\Core\Widget\Abstra
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\ViewHelpers\Widget\Controller\OrderingsController
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $controller;
 

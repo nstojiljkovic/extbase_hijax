@@ -29,7 +29,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers\Val;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers\Val
  */
-class CurrentSettingsHashViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class CurrentSettingsHashViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @return string

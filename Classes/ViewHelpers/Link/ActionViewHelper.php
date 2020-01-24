@@ -1,6 +1,8 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\ViewHelpers\Link;
 
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /***************************************************************
@@ -35,25 +37,25 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\MVC\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $mvcDispatcher;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Service\ExtensionService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $extensionService;
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Event\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $hijaxEventDispatcher;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
@@ -72,6 +74,8 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 	 * @param boolean $returnUriOnly
 	 *
 	 * @return string
+	 * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	public function render(
 			$action = NULL,
@@ -89,7 +93,7 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 		$request = $this->mvcDispatcher->getCurrentRequest();
 
 		if ($forceContext) {
-			$requestArguments = $this->controllerContext->getRequest()->getArguments();
+			$requestArguments = $this->renderingContext->getControllerContext()->getRequest()->getArguments();
 			$requestArguments = array_merge($requestArguments, $this->hijaxEventDispatcher->getContextArguments());
 			if (is_array($forceContext)) {
 				$filteredRequestArguments = array();
@@ -113,7 +117,7 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 
 		if ($noAjax) {
 			if ($returnUriOnly) {
-				$uriBuilder = $this->controllerContext->getUriBuilder();
+				$uriBuilder = $this->renderingContext->getControllerContext()->getUriBuilder();
 				$pageType = 0;
 				$noCache = FALSE;
 				$noCacheHash = FALSE;
@@ -153,6 +157,7 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 					$pluginName = $request->getPluginName();
 				}
 
+				// @extensionScannerIgnoreLine
 				$cachedAjaxIfPossible = $cachedAjaxIfPossible ? $this->configurationManager->getContentObject()->getUserObjectType() != ContentObjectRenderer::OBJECTTYPE_USER_INT : FALSE;
 
 				if ($cachedAjaxIfPossible) {
@@ -173,7 +178,8 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 			$additionalArguments = array();
 			$this->hA('r[0][arguments]', $arguments, $additionalArguments);
 
-			$language = intval($GLOBALS['TSFE'] ? $GLOBALS['TSFE']->sys_language_content : 0);
+			$context = GeneralUtility::makeInstance(Context::class);
+			$language = intval($context->getPropertyFromAspect('language', 'contentId') ?: 0);
 			$additionalParams =
 				'&r[0][extension]=' . $extensionName .
 				'&r[0][plugin]=' . $pluginName .

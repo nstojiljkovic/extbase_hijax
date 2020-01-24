@@ -1,6 +1,7 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\ViewHelpers;
 
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /***************************************************************
@@ -31,23 +32,23 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class ScriptViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class ScriptViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Utility\Ajax\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $ajaxDispatcher;
 
 	/**
 	 * @var \TYPO3\CMS\Core\Page\PageRenderer
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $pageRenderer;
 
@@ -57,6 +58,7 @@ class ScriptViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelp
 	 * @return boolean
 	 */
 	protected function isCached() {
+		// @extensionScannerIgnoreLine
 		$userObjType = $this->configurationManager->getContentObject()->getUserObjectType();
 		return ($userObjType !== \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::OBJECTTYPE_USER_INT);
 	}
@@ -119,7 +121,7 @@ class ScriptViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelp
 				} else {
 					if (!$src && $moveToExternalFile) {
 						$src = 'typo3temp' . DIRECTORY_SEPARATOR . 'extbase_hijax' . DIRECTORY_SEPARATOR . md5($content) . '.js';
-						\TYPO3\CMS\Core\Utility\GeneralUtility::writeFileToTypo3tempDir(PATH_site . $src, $content);
+						\TYPO3\CMS\Core\Utility\GeneralUtility::writeFileToTypo3tempDir(Environment::getPublicPath() . DIRECTORY_SEPARATOR . $src, $content);
 
 						if ($GLOBALS['TSFE']) {
 							if ($GLOBALS['TSFE']->baseUrl) {

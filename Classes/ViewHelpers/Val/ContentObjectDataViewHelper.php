@@ -29,11 +29,11 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers\Val;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers\Val
  */
-class ContentObjectDataViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class ContentObjectDataViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
@@ -48,6 +48,7 @@ class ContentObjectDataViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 	 * @return string
 	 */
 	public function render() {
+		// @extensionScannerIgnoreLine
 		$value = $this->configurationManager->getContentObject() ? $this->configurationManager->getContentObject()->data : array();
 
 		if ($this->arguments['as']) {

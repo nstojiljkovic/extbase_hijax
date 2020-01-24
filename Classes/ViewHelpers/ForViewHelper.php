@@ -29,7 +29,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class ForViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ForViewHelper {
+class ForViewHelper extends \TYPO3Fluid\Fluid\ViewHelpers\ForViewHelper {
 
 	/**
 	 * Iterates through elements of $each and renders child nodes
@@ -50,18 +50,17 @@ class ForViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ForViewHelper {
 
 	/**
 	 * @param array $arguments
-	 * @param callable $renderChildrenClosure
-	 * @param \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
+	 * @param \Closure $renderChildrenClosure
+	 * @param \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext
 	 * @return string
-	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
 	 */
-	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface $renderingContext) {
-		$templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+	static public function renderStatic(array $arguments, \Closure $renderChildrenClosure, \TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface $renderingContext) {
+		$variableProvider = $renderingContext->getVariableProvider();
 		if ($arguments['each'] === NULL) {
 			return '';
 		}
 		if (is_object($arguments['each']) && !$arguments['each'] instanceof \Traversable) {
-			throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('ForViewHelper only supports arrays and objects implementing Traversable interface', 1248728393);
+			throw new \TYPO3Fluid\Fluid\Core\ViewHelper\Exception('ForViewHelper only supports arrays and objects implementing Traversable interface', 1248728393);
 		}
 
 		if ($arguments['reverse'] === TRUE) {
@@ -80,16 +79,16 @@ class ForViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ForViewHelper {
 		$output = '';
 
 		foreach ($arguments['each'] as $keyValue => $singleElement) {
-			$templateVariableContainer->add($arguments['as'], $singleElement);
+			$variableProvider->add($arguments['as'], $singleElement);
 			if ($arguments['key'] !== '') {
-				$templateVariableContainer->add($arguments['key'], $keyValue);
+				$variableProvider->add($arguments['key'], $keyValue);
 			}
 			if ($arguments['iteration'] !== NULL) {
 				$iterationData['isFirst'] = $iterationData['cycle'] === 1;
 				$iterationData['isLast'] = $iterationData['cycle'] === $iterationData['total'];
 				$iterationData['isEven'] = $iterationData['cycle'] % 2 === 0;
 				$iterationData['isOdd'] = !$iterationData['isEven'];
-				$templateVariableContainer->add($arguments['iteration'], $iterationData);
+				$variableProvider->add($arguments['iteration'], $iterationData);
 				$iterationData['cycle']++;
 			}
 			$iterationData['index']++;
@@ -99,12 +98,12 @@ class ForViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ForViewHelper {
 			) {
 				$output .= $renderChildrenClosure();
 			}
-			$templateVariableContainer->remove($arguments['as']);
+			$variableProvider->remove($arguments['as']);
 			if ($arguments['key'] !== '') {
-				$templateVariableContainer->remove($arguments['key']);
+				$variableProvider->remove($arguments['key']);
 			}
 			if ($arguments['iteration'] !== NULL) {
-				$templateVariableContainer->remove($arguments['iteration']);
+				$variableProvider->remove($arguments['iteration']);
 			}
 		}
 		return $output;

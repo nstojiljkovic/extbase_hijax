@@ -356,7 +356,7 @@ class SQL {
 	/**
 	 * Returns the sections of the query.
 	 *
-	 * @return string sql
+	 * @return array sql
 	 */
 	public function getArray() {
 

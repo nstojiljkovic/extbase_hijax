@@ -23,15 +23,15 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\AbstractNode;
-use \TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler;
+use \TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
+use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
 
 /**
  * Class IfViewHelper
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class IfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
+class IfViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
 
 	/**
 	 * An array of \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\AbstractNode
@@ -92,13 +92,13 @@ class IfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionVie
 
 		$elseViewHelperEncountered = FALSE;
 		foreach ($this->childNodes as $childNode) {
-			if ($childNode instanceof \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
+			if ($childNode instanceof \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
 				&& $childNode->getViewHelperClassName() === 'EssentialDots\\ExtbaseHijax\\ViewHelpers\\ThenViewHelper'
 			) {
 				$data = $childNode->evaluate($this->renderingContext);
 				return $data;
 			}
-			if ($childNode instanceof \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
+			if ($childNode instanceof \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
 				&& $childNode->getViewHelperClassName() === 'EssentialDots\\ExtbaseHijax\\ViewHelpers\\ElseViewHelper'
 			) {
 				$elseViewHelperEncountered = TRUE;
@@ -128,7 +128,7 @@ class IfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionVie
 			return $elseClosure();
 		}
 		foreach ($this->childNodes as $childNode) {
-			if ($childNode instanceof \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
+			if ($childNode instanceof \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
 				&& $childNode->getViewHelperClassName() === 'EssentialDots\\ExtbaseHijax\\ViewHelpers\\ElseViewHelper'
 			) {
 				return $childNode->evaluate($this->renderingContext);
@@ -142,31 +142,30 @@ class IfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionVie
 	 * The compiled ViewHelper adds two new ViewHelper arguments: __thenClosure and __elseClosure.
 	 * These contain closures which are be executed to render the then(), respectively else() case.
 	 *
-	 * @param string $argumentsVariableName
-	 * @param string $renderChildrenClosureVariableName
+	 * @param string $argumentsName
+	 * @param string $closureName
 	 * @param string $initializationPhpCode
-	 * @param \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\AbstractNode $syntaxTreeNode
-	 * @param \TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler $templateCompiler
+	 * @param ViewHelperNode $node
+	 * @param TemplateCompiler $compiler
 	 * @return string
-	 * @internal
 	 */
-	public function compile($argumentsVariableName, $renderChildrenClosureVariableName, &$initializationPhpCode, AbstractNode $syntaxTreeNode, TemplateCompiler $templateCompiler) {
-		foreach ($syntaxTreeNode->getChildNodes() as $childNode) {
-			if ($childNode instanceof \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
+	public function compile($argumentsName, $closureName, &$initializationPhpCode, ViewHelperNode $node, TemplateCompiler $compiler) {
+		foreach ($node->getChildNodes() as $childNode) {
+			if ($childNode instanceof \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
 				&& $childNode->getViewHelperClassName() === 'EssentialDots\\ExtbaseHijax\\ViewHelpers\\ThenViewHelper'
 			) {
 
-				$childNodesAsClosure = $templateCompiler->wrapChildNodesInClosure($childNode);
-				$initializationPhpCode .= sprintf('%s[\'__thenClosure\'] = %s;', $argumentsVariableName, $childNodesAsClosure) . chr(10);
+				$childNodesAsClosure = $compiler->wrapChildNodesInClosure($childNode);
+				$initializationPhpCode .= sprintf('%s[\'__thenClosure\'] = %s;', $argumentsName, $childNodesAsClosure) . chr(10);
 			}
-			if ($childNode instanceof \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
+			if ($childNode instanceof \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode
 				&& $childNode->getViewHelperClassName() === 'EssentialDots\\ExtbaseHijax\\ViewHelpers\\ElseViewHelper'
 			) {
 
-				$childNodesAsClosure = $templateCompiler->wrapChildNodesInClosure($childNode);
-				$initializationPhpCode .= sprintf('%s[\'__elseClosure\'] = %s;', $argumentsVariableName, $childNodesAsClosure) . chr(10);
+				$childNodesAsClosure = $compiler->wrapChildNodesInClosure($childNode);
+				$initializationPhpCode .= sprintf('%s[\'__elseClosure\'] = %s;', $argumentsName, $childNodesAsClosure) . chr(10);
 			}
 		}
-		return \TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler::SHOULD_GENERATE_VIEWHELPER_INVOCATION;
+		return \TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler::SHOULD_GENERATE_VIEWHELPER_INVOCATION;
 	}
 }

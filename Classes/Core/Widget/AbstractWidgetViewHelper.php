@@ -33,7 +33,7 @@ abstract class AbstractWidgetViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\Abs
 
 	/**
 	 * The Controller associated to this widget.
-	 * This needs to be filled by the individual subclass by an @inject
+	 * This needs to be filled by the individual subclass by an @TYPO3\CMS\Extbase\Annotation\Inject
 	 * annotation.
 	 *
 	 * @var \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController
@@ -51,7 +51,7 @@ abstract class AbstractWidgetViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\Abs
 
 	/**
 	 * @var \TYPO3\CMS\Fluid\Core\Widget\AjaxWidgetContextHolder
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $ajaxWidgetContextHolder;
 
@@ -62,7 +62,7 @@ abstract class AbstractWidgetViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\Abs
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Service\ExtensionService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $extensionService;
 
@@ -102,14 +102,14 @@ abstract class AbstractWidgetViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\Abs
 		$this->widgetContext->setWidgetConfiguration($this->getWidgetConfiguration());
 		$this->initializeWidgetIdentifier();
 		$this->widgetContext->setControllerObjectName(get_class($this->controller));
-		$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
-		$pluginName = $this->controllerContext->getRequest()->getPluginName();
+		$extensionName = $this->renderingContext->getControllerContext()->getRequest()->getControllerExtensionName();
+		$pluginName = $this->renderingContext->getControllerContext()->getRequest()->getPluginName();
 		$this->widgetContext->setParentExtensionName($extensionName);
 		$this->widgetContext->setParentPluginName($pluginName);
 		$pluginNamespace = $this->extensionService->getPluginNamespace($extensionName, $pluginName);
 		$this->widgetContext->setParentPluginNamespace($pluginNamespace);
 		// set parent context
-		$this->widgetContext->setParentControllerContext($this->controllerContext);
+		$this->widgetContext->setParentControllerContext($this->renderingContext->getControllerContext());
 		$this->widgetContext->setWidgetViewHelperClassName(get_class($this));
 		if ($this->ajaxWidget === TRUE) {
 			$this->ajaxWidgetContextHolder->store($this->widgetContext);
@@ -146,7 +146,8 @@ abstract class AbstractWidgetViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\Abs
 	 * via Dependency Injection.
 	 *
 	 * @return \TYPO3\CMS\Extbase\Mvc\ResponseInterface the response of this request.
-	 * @throws \TYPO3\CMS\Fluid\Core\Widget\Exception\MissingControllerException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidActionNameException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidActionNameException
 	 */
 	protected function initiateSubRequest() {
 		if (!($this->controller instanceof \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController)) {
@@ -176,9 +177,10 @@ abstract class AbstractWidgetViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\Abs
 	 *
 	 * @param \TYPO3\CMS\Fluid\Core\Widget\WidgetRequest $subRequest
 	 * @return void
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidActionNameException
 	 */
 	protected function passArgumentsToSubRequest(\TYPO3\CMS\Fluid\Core\Widget\WidgetRequest $subRequest) {
-		$arguments = $this->controllerContext->getRequest()->getArguments();
+		$arguments = $this->renderingContext->getControllerContext()->getRequest()->getArguments();
 		$widgetIdentifier = $this->widgetContext->getWidgetIdentifier();
 		if (isset($arguments[$widgetIdentifier])) {
 			if (isset($arguments[$widgetIdentifier]['action'])) {

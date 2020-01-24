@@ -29,11 +29,11 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class ExtendedServerIfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
+class ExtendedServerIfViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
@@ -113,7 +113,7 @@ class ExtendedServerIfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstra
 				continue;
 			}
 			if (preg_match('/' . preg_quote($evilFunction, '/') . '([\s]){0,}\(/', $condition) === 1) {
-				throw new \Exception('Disallowed PHP function "' . $evilFunction . '" used in IfViewHelper condition. Allowed functions: ' . $goodFunctions, 1309613359);
+				throw new \Exception('Disallowed PHP function "' . $evilFunction . '" used in IfViewHelper condition.', 1309613359);
 			}
 		}
 

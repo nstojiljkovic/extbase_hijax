@@ -112,6 +112,9 @@ class Dispatcher extends \TYPO3\CMS\Extbase\Mvc\Dispatcher {
 	 * @param \TYPO3\CMS\Extbase\Mvc\ResponseInterface $response The response, to be modified by the controller
 	 * @param \EssentialDots\ExtbaseHijax\Event\Listener $listener Listener
 	 * @return void
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InfiniteLoopException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidActionNameException
+	 * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidControllerNameException
 	 */
 	public function dispatch(\TYPO3\CMS\Extbase\Mvc\RequestInterface $request, \TYPO3\CMS\Extbase\Mvc\ResponseInterface $response, \EssentialDots\ExtbaseHijax\Event\Listener $listener = NULL) {
 		/* @var $request \TYPO3\CMS\Extbase\Mvc\Request */

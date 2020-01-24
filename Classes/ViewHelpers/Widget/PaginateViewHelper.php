@@ -33,7 +33,7 @@ class PaginateViewHelper extends \EssentialDots\ExtbaseHijax\Core\Widget\Abstrac
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\ViewHelpers\Widget\Controller\PaginateController
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $controller;
 

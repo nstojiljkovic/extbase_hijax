@@ -29,7 +29,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class TranslateViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class TranslateViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Translate a given key or use the tag body as default.
@@ -43,7 +43,7 @@ class TranslateViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewH
 	 */
 	public function render($key, $default = NULL, $htmlEscape = TRUE, array $arguments = NULL, $extensionName = '') {
 		if (!$extensionName) {
-			$request = $this->controllerContext->getRequest();
+			$request = $this->renderingContext->getControllerContext()->getRequest();
 			$extensionName = $request->getControllerExtensionName();
 		}
 		$value = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($key, $extensionName, $arguments);

@@ -24,6 +24,7 @@ namespace EssentialDots\ExtbaseHijax\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -32,7 +33,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @package EssentialDots\ExtbaseHijax\Service
  */
-class AutoIDService implements \TYPO3\CMS\Core\SingletonInterface {
+class AutoIDService implements \TYPO3\CMS\Core\SingletonInterface, \Psr\Log\LoggerAwareInterface {
+
+	use LoggerAwareTrait;
 
 	/**
 	 * @var \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
@@ -41,6 +44,7 @@ class AutoIDService implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Constructor
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
 	 */
 	public function __construct() {
 		/** @var CacheManager $cacheManager */
@@ -97,7 +101,8 @@ class AutoIDService implements \TYPO3\CMS\Core\SingletonInterface {
 				}
 			}
 		} catch (\Exception $e) {
-			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Locking: Failed to acquire lock: ' . $e->getMessage(), 'cms', \TYPO3\CMS\Core\Utility\GeneralUtility::SYSLOG_SEVERITY_ERROR);
+			// @extensionScannerIgnoreLine
+			$this->logger->error('Locking: Failed to acquire lock: ' . $e->getMessage());
 			// If locking fails, return with FALSE and continue without locking
 			$success = FALSE;
 		}

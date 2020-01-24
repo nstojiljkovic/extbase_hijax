@@ -1,6 +1,9 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\Lock;
 
+use Psr\Log\LoggerAwareTrait;
+use TYPO3\CMS\Core\Core\Environment;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +32,10 @@ namespace EssentialDots\ExtbaseHijax\Lock;
  *
  * @package EssentialDots\ExtbaseHijax\Lock
  */
-class Lock extends AbstractLock {
+class Lock extends AbstractLock implements \Psr\Log\LoggerAwareInterface {
+
+	use LoggerAwareTrait;
+
 	/**
 	 * @var string Locking method: One of 'flock', 'semaphore' or 'disable'
 	 */
@@ -54,11 +60,6 @@ class Lock extends AbstractLock {
 	 * @var boolean True if lock is acquired
 	 */
 	protected $isAcquired = FALSE;
-
-	/**
-	 * @var string Logging facility
-	 */
-	protected $syslogFacility = 'cms';
 
 	/**
 	 * @var boolean True if locking should be logged
@@ -86,11 +87,11 @@ class Lock extends AbstractLock {
 
 		switch ($this->method) {
 			case 'flock':
-				$genTempPath = PATH_site . 'typo3temp' . DIRECTORY_SEPARATOR . 'extbase_hijax' . DIRECTORY_SEPARATOR;
+				$genTempPath = Environment::getPublicPath() . DIRECTORY_SEPARATOR . 'typo3temp' . DIRECTORY_SEPARATOR . 'extbase_hijax' . DIRECTORY_SEPARATOR;
 				if (!is_dir($genTempPath)) {
 					\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir($genTempPath);
 				}
-				$path = PATH_site . 'typo3temp' . DIRECTORY_SEPARATOR . 'extbase_hijax' . DIRECTORY_SEPARATOR . 'locks' . DIRECTORY_SEPARATOR;
+				$path = Environment::getPublicPath() . DIRECTORY_SEPARATOR . 'typo3temp' . DIRECTORY_SEPARATOR . 'extbase_hijax' . DIRECTORY_SEPARATOR . 'locks' . DIRECTORY_SEPARATOR;
 				if (!is_dir($path)) {
 					\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir($path);
 				}
@@ -257,15 +258,6 @@ class Lock extends AbstractLock {
 	}
 
 	/**
-	 * Sets the facility (extension name) for the syslog entry.
-	 *
-	 * @param string $syslogFacility
-	 */
-	public function setSyslogFacility($syslogFacility) {
-		$this->syslogFacility = $syslogFacility;
-	}
-
-	/**
 	 * Enable/ disable logging
 	 *
 	 * @param boolean $isLoggingEnabled
@@ -284,7 +276,25 @@ class Lock extends AbstractLock {
 	 */
 	public function sysLog($message, $severity = 0) {
 		if ($this->isLoggingEnabled) {
-			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog('Locking [' . $this->method . '::' . $this->id . ']: ' . trim($message), $this->syslogFacility, $severity);
+			switch ($severity) {
+				case 4:
+					$this->logger->critical('Locking [' . $this->method . '::' . $this->id . ']: ' . trim($message));
+					break;
+				case 3:
+					// @extensionScannerIgnoreLine
+					$this->logger->error('Locking [' . $this->method . '::' . $this->id . ']: ' . trim($message));
+					break;
+				case 2:
+					$this->logger->warning('Locking [' . $this->method . '::' . $this->id . ']: ' . trim($message));
+					break;
+				case 1:
+					$this->logger->notice('Locking [' . $this->method . '::' . $this->id . ']: ' . trim($message));
+					break;
+				case 0:
+				default:
+					$this->logger->info('Locking [' . $this->method . '::' . $this->id . ']: ' . trim($message));
+			}
+
 		}
 	}
 }

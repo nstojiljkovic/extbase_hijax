@@ -1,0 +1,34 @@
+{
+    "name": "essentialdots\/typo3-extbase-hijax",
+    "description": "Extbase Hijax add-on",
+    "require": {
+        "php": ">=7.2.0",
+        "typo3\/cms-core": "^9.5",
+        "friendsoftypo3\/typo3db-legacy": "^1.1.1",
+        "ext-sysvsem": "*",
+        "ext-posix": "*",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "oliverklee/phpunit": "^6"
+    },
+    "type": "typo3-cms-extension",
+    "keywords": [
+        "TYPO3 CMS",
+        "migration"
+    ],
+    "homepage": "https:\/\/www.essentialdots.com",
+    "license": "GPL-2.0+",
+    "prefer-stable": true,
+    "extra": {
+        "typo3\/cms": {
+            "extension-key": "extbase_hijax"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "EssentialDots\\ExtbaseHijax\\": "Classes\/"
+        }
+    },
+    "version": "4.0.0"
+}

@@ -29,7 +29,7 @@ namespace EssentialDots\ExtbaseHijax\ViewHelpers;
  *
  * @package EssentialDots\ExtbaseHijax\ViewHelpers
  */
-class AjaxRefreshViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper {
+class AjaxRefreshViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper {
 
 	/**
 	 * @var string
@@ -38,19 +38,19 @@ class AjaxRefreshViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTag
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Event\Dispatcher
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $hijaxEventDispatcher;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Service\ExtensionService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $extensionService;
 
@@ -79,6 +79,8 @@ class AjaxRefreshViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTag
 	 * @param string $resultTarget target where the results will be loaded
 	 * @param string $loaders target where the loader will be shown
 	 * @return string rendered element
+	 * @throws \TYPO3\CMS\Extbase\Exception
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	public function render(
 			$action = NULL, array $arguments = array(), $controller = NULL, $extensionName = NULL, $pluginName = NULL,
@@ -116,9 +118,10 @@ class AjaxRefreshViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTag
 	 * @param NULL $controller
 	 * @param NULL $extensionName
 	 * @param NULL $pluginName
+	 * @throws \TYPO3\CMS\Extbase\Exception
 	 */
 	protected function renderHijaxDataAttributes($action = NULL, array $arguments = array(), $controller = NULL, $extensionName = NULL, $pluginName = NULL) {
-		$request = $this->controllerContext->getRequest();
+		$request = $this->renderingContext->getControllerContext()->getRequest();
 
 		$this->tag->addAttribute('data-hijax-element-type', 'ajax');
 		$this->tag->addAttribute('class', trim($this->arguments['class'] . ' hijax-element'));

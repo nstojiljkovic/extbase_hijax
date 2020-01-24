@@ -33,19 +33,19 @@ class Listener {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $objectManager;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $configurationManager;
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Service\AutoIDService
-	 * @inject
+	 * @TYPO3\CMS\Extbase\Annotation\Inject
 	 */
 	protected $autoIdService;
 
@@ -95,6 +95,7 @@ class Listener {
 		if ($contentObject) {
 			$this->contentObject = $contentObject;
 		} else {
+			// @extensionScannerIgnoreLine
 			$this->contentObject = $this->configurationManager->getContentObject();
 		}
 
@@ -198,6 +199,7 @@ class Listener {
 		/* @var $eventContentObject \EssentialDots\ExtbaseHijax\Event\CObj */
 		$eventContentObject = $this->objectManager->get('EssentialDots\\ExtbaseHijax\\Service\\Serialization\\CObjFactory')->unserialize($contentObject);
 		$eventContentObject->reconstitute();
+		// @extensionScannerIgnoreLine
 		$this->contentObject = $eventContentObject->getContentObject();
 	}
 
@@ -209,7 +211,7 @@ class Listener {
 	}
 
 	/**
-	 * @param multitype : $configuration
+	 * @param mixed $configuration
 	 */
 	public function setConfiguration($configuration) {
 		$this->configuration = $this->ksortRecursive($configuration);

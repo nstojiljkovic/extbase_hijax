@@ -52,6 +52,8 @@ class ListenerFactory extends \EssentialDots\ExtbaseHijax\Service\Serialization\
 	/**
 	 * @param string $listenerId
 	 * @return object
+	 * @throws \Exception
+	 * @throws \Exception
 	 */
 	public function findById($listenerId) {
 		$result = NULL;

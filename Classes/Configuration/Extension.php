@@ -1,6 +1,11 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\Configuration;
 
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -50,9 +55,9 @@ class Extension implements ExtensionInterface, \TYPO3\CMS\Core\SingletonInterfac
 	 * constructor
 	 */
 	public function __construct() {
-		$this->configuration = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['extbase_hijax'] ? unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['extbase_hijax']) : array();
-		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		$this->configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface');
+		$this->configuration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('extbase_hijax') ?: [];
+		$this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+		$this->configurationManager = $this->objectManager->get(ConfigurationManagerInterface::class);
 	}
 
 	/**

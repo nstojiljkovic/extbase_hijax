@@ -61,6 +61,7 @@ abstract class AbstractFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Constructor
+	 * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
 	 */
 	public function __construct() {
 		$this->objectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\Container\\Container');
@@ -112,7 +113,7 @@ abstract class AbstractFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @param object $object
-	 * @return boolean
+	 * @return bool
 	 */
 	public function persist($object) {
 		$id = $this->getIdForObject($object);
@@ -124,6 +125,7 @@ abstract class AbstractFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		} else {
 			$result = FALSE;
 		}
+		return $result;
 	}
 
 	/**
