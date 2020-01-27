@@ -19,25 +19,25 @@ $EM_CONF[$_EXTKEY] = array (
 	'modify_tables' => '',
 	'clearCacheOnLoad' => 1,
 	'lockType' => '',
-	'version' => '4.0.0-dev',
-	'constraints' =>
+	'version' => '4.0.0',
+	'constraints' => 
 	array (
-	  'depends' =>
+	  'depends' => 
 	  array (
-		'typo3' => '9.5.0-0.0.0',
-		'typo3db_legacy' => '1.0.0-1.0.99',
-		'extbase' => '',
-		'fluid' => '',
+	    'typo3' => '9.5.0-0.0.0',
+	    'typo3db_legacy' => '1.0.0-1.0.99',
+	    'extbase' => '',
+	    'fluid' => '',
 	  ),
-	  'conflicts' =>
+	  'conflicts' => 
 	  array (
 	  ),
-	  'suggests' =>
+	  'suggests' => 
 	  array (
 	    'ed_cache' => '0.2.5',
 	  ),
 	),
-	'suggests' =>
+	'suggests' => 
 	array (
 	),
 	'conflicts' => '',

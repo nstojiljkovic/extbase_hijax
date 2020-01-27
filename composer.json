@@ -10,7 +10,7 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "oliverklee/phpunit": "^6"
+        "oliverklee\/phpunit": "^6"
     },
     "type": "typo3-cms-extension",
     "keywords": [

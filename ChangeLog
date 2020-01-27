@@ -1,3 +1,14 @@
+Version: 4.0.0
+Subject: [TASK] TYPO3 9 LTS compatible version
+Date:    2020-01-27 07:36:25 +0100
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=247df3276900606bfc558bfd9924fc13de3fa9a6
+
+Change-Id: Id3ca2b8bc0cf06102e4933e7e4ba1eebe3a10c14
+Related: #TP-5145
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/5832
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+Reviewed-by: Nikola Stojiljković <nikola.stojiljkovic@essentialdots.com>
+
 Version: 3.0.10
 Subject: [BUGFIX] Bring back form and widget.link viewhelpers for TYPO3 8.3 and lower
 Date:    2018-07-29 17:09:22 +0200
