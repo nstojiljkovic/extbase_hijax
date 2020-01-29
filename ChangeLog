@@ -1,3 +1,14 @@
+Version: 3.0.11
+Subject: [BUGFIX] Fix call to undefined method Backend::getPlainValue
+Date:    2020-01-29 09:16:02 +0100
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=52619e77707b9a5b24ea4bea9c706b22fb5ed654
+
+Change-Id: I9d8a84ef228b40dcef1625662425d0db03b5781e
+Related: #TP-5145
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/5840
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+Reviewed-by: Nikola Stojiljković <nikola.stojiljkovic@essentialdots.com>
+
 Version: 3.0.10
 Subject: [BUGFIX] Bring back form and widget.link viewhelpers for TYPO3 8.3 and lower
 Date:    2018-07-29 17:09:22 +0200
