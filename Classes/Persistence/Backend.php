@@ -23,6 +23,8 @@ namespace EssentialDots\ExtbaseHijax\Persistence;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\ColumnMap;
 use TYPO3\CMS\Extbase\Persistence\ObjectMonitoringInterface;
 
 /**
@@ -42,12 +44,14 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 * Inserts an object in the storage backend
 	 *
 	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object
-	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject
+	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface|NULL $parentObject
 	 * @param string $parentPropertyName
+	 * @return void
 	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception\TooDirtyException
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception\UnexpectedTypeException
 	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
 	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
-	 * @return void
 	 */
 	protected function insertObject(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $parentObject = NULL, $parentPropertyName = '') {
 
@@ -185,7 +189,10 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 *
 	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object The object to be updated
 	 * @param array $row Row to be stored
-	 * @return bool
+	 * @return bool|mixed|void
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
 	 */
 	protected function updateObject(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, array $row) {
 		//////////////////// ORIGINAL START //////////////////////
@@ -238,7 +245,10 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 *
 	 * @param \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object The object to be removed from the storage
 	 * @param boolean $markAsDeleted Wether to just flag the row deleted (default) or really delete it
-	 * @return void
+	 * @param bool $markAsDeleted
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+	 * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
 	 */
 	protected function removeEntity(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, $markAsDeleted = TRUE) {
 		$dataMap = $this->dataMapper->getDataMap(get_class($object));
@@ -296,5 +306,15 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 		if ($frameworkConfiguration['persistence']['updateReferenceIndex'] === '1') {
 			$this->referenceIndex->updateRefIndexTable($tableName, $object->getUid());
 		}
+	}
+
+	/**
+	 * @param $input
+	 * @param ColumnMap|null $columnMap
+	 * @return int|string|null
+	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception\UnexpectedTypeException
+	 */
+	protected function getPlainValue($input, ColumnMap $columnMap = NULL) {
+		return $input !== NULL ? $this->dataMapper->getPlainValue($input, $columnMap) : NULL;
 	}
 }
