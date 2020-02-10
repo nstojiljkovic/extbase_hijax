@@ -1,3 +1,14 @@
+Version: 3.0.12
+Subject: [BUGFIX] Bring back TYPO3 6.2 compatibility
+Date:    2020-02-10 12:36:34 +0100
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=676c61490396cc11e4b4527c670dad5253cfbbca
+
+Change-Id: I61fc161fde777d5c7fb442ad2ee6e82d4f6d2923
+Related: #TP-5145, #TP-5151
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/5855
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+Reviewed-by: Nikola Stojiljković <nikola.stojiljkovic@essentialdots.com>
+
 Version: 3.0.11
 Subject: [BUGFIX] Fix call to undefined method Backend::getPlainValue
 Date:    2020-01-29 09:16:02 +0100
