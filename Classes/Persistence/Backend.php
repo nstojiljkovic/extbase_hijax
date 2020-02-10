@@ -314,7 +314,10 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 * @return int|string|null
 	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception\UnexpectedTypeException
 	 */
-	protected function getPlainValue($input, ColumnMap $columnMap = NULL) {
-		return $input !== NULL ? $this->dataMapper->getPlainValue($input, $columnMap) : NULL;
+	protected function getPlainValue($input, $columnMap = NULL) {
+		if (method_exists($this->dataMapper, 'getPlainValue')) {
+			return $input !== NULL ? $this->dataMapper->getPlainValue($input, $columnMap) : NULL;
+		}
+		return parent::getPlainValue($input, $columnMap);
 	}
 }
