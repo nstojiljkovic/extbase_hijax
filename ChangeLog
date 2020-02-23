@@ -1,3 +1,14 @@
+Version: 3.0.13
+Subject: [BUGFIX] Fix PHP warnings in TYPO3 v8.7
+Date:    2020-02-23 09:21:34 +0100
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=4f035f2bfd0cd0d62e5700cfde5de2a40a848a24
+
+Change-Id: I3a42b0848f9a2a3100c225b41502c6e516a8cedd
+Related: #TP-5145, #TP-5151
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/5868
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+Reviewed-by: Nikola Stojiljković <nikola.stojiljkovic@essentialdots.com>
+
 Version: 3.0.12
 Subject: [BUGFIX] Bring back TYPO3 6.2 compatibility
 Date:    2020-02-10 12:36:34 +0100
