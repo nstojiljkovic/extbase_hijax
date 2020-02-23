@@ -86,14 +86,14 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 				&& $object instanceof ObjectMonitoringInterface) {
 				if ($object->_isDirty($propertyName)) {
 					if (!$propertyValue->_isNew()) {
-						$row[$columnMap->getColumnName()] = $this->getPlainValue($propertyValue);
+						$row[$columnMap->getColumnName()] = $this->getPlainValueCompat($propertyValue);
 						if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
 							$object->_memorizeCleanState($propertyName);
 						}
 					}
 				}
 			} else {
-				$row[$columnMap->getColumnName()] = $this->getPlainValue($propertyValue, $columnMap);
+				$row[$columnMap->getColumnName()] = $this->getPlainValueCompat($propertyValue, $columnMap);
 				if ($object instanceof \TYPO3\CMS\Extbase\DomainObject\AbstractEntity) {
 					$object->_memorizeCleanState($propertyName);
 				}
@@ -314,10 +314,10 @@ class Backend extends \TYPO3\CMS\Extbase\Persistence\Generic\Backend {
 	 * @return int|string|null
 	 * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception\UnexpectedTypeException
 	 */
-	protected function getPlainValue($input, $columnMap = NULL) {
+	protected function getPlainValueCompat($input, $columnMap = NULL) {
 		if (method_exists($this->dataMapper, 'getPlainValue')) {
 			return $input !== NULL ? $this->dataMapper->getPlainValue($input, $columnMap) : NULL;
 		}
-		return parent::getPlainValue($input, $columnMap);
+		return $this->getPlainValue($input, $columnMap);
 	}
 }
