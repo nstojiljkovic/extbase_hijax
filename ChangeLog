@@ -1,3 +1,17 @@
+Version: 4.0.1
+Subject: [BUGFIX] Do not override request method by default
+Date:    2020-04-03 08:42:46 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=e7038010698d027d295a869eb336b286be23c3c5
+
+BREAKING CHANGE: This might affect extensions which explicitly check for
+request method (for example core's form).
+
+Change-Id: I8d0d4e2354215784e8d3ac3a0f7f9c03035f37a0
+Related: #TP-5168
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/5924
+Reviewed-by: Nikola Stojiljković <nikola.stojiljkovic@essentialdots.com>
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+
 Version: 4.0.0
 Subject: [TASK] TYPO3 9 LTS compatible version
 Date:    2020-01-27 07:36:25 +0100
