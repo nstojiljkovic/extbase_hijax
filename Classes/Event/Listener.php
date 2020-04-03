@@ -82,9 +82,6 @@ class Listener {
 		$this->autoIdService = $this->objectManager->get('EssentialDots\\ExtbaseHijax\\Service\\AutoIDService');
 
 		$this->request = $request;
-		if (method_exists($this->request, 'setMethod')) {
-			$this->request->setMethod('GET');
-		}
 
 		if ($configuration) {
 			$this->configuration = $this->ksortRecursive($configuration);
