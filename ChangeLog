@@ -1,3 +1,14 @@
+Version: 4.0.2
+Subject: [TASK] Update typo3db-legacy dependency
+Date:    2020-06-08 17:51:18 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=bd078a956aebcbf6d9fe04e788f4b3a485a620a1
+
+Change-Id: I95e103468aae97dc0feb3e6bd1fe19b47fa5c0a1
+Related: #TP-5201
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/6070
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+Reviewed-by: Nikola Stojiljković <nikola.stojiljkovic@essentialdots.com>
+
 Version: 4.0.1
 Subject: [BUGFIX] Do not override request method by default
 Date:    2020-04-03 08:42:46 +0200
