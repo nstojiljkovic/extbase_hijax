@@ -1,3 +1,14 @@
+Version: 4.0.3
+Subject: [BUGFIX] Update obsolete CLI environment check
+Date:    2020-07-29 18:48:53 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=eaf62f8652c9a8a543489831a1f88fb6f1debb50
+
+Change-Id: I192ec766a62a5517b703fa43ba142bc0608871ed
+Related: #TP-5239
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/6182
+Reviewed-by: Nikola Stojiljković <nikola.stojiljkovic@essentialdots.com>
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+
 Version: 4.0.2
 Subject: [TASK] Update typo3db-legacy dependency
 Date:    2020-06-08 17:51:18 +0200
