@@ -1,6 +1,8 @@
 <?php
 namespace EssentialDots\ExtbaseHijax\MVC;
 
+use TYPO3\CMS\Core\Core\Environment;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -121,7 +123,7 @@ class Dispatcher extends \TYPO3\CMS\Extbase\Mvc\Dispatcher {
 		$this->currentRequest = $request;
 		array_push($this->requestsStack, $this->currentRequest);
 
-		if (defined('TYPO3_cliMode') && TYPO3_cliMode === TRUE) {
+		if (Environment::isCli()) {
 			parent::dispatch($request, $response);
 		} else {
 			array_push($this->listenersStack, $this->currentListener);
