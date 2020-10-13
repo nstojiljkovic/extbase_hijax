@@ -120,13 +120,11 @@ class ActionViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelpe
 				$uriBuilder = $this->renderingContext->getControllerContext()->getUriBuilder();
 				$pageType = 0;
 				$noCache = FALSE;
-				$noCacheHash = FALSE;
 				$result = $uriBuilder
 					->reset()
 					->setTargetPageUid($pageUid)
 					->setTargetPageType($pageType)
 					->setNoCache($noCache)
-					->setUseCacheHash(!$noCacheHash)
 					->setFormat($format)
 					->uriFor($action, $arguments, $controller, $extensionName, $pluginName);
 			} else {

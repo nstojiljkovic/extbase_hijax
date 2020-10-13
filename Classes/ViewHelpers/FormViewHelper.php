@@ -46,37 +46,10 @@ class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper {
 	/**
 	 * Initialize arguments.
 	 * @return void
-	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
+	 * @throws \Exception
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		if (version_compare(TYPO3_version, '8.3', '<')) {
-			$this->registerArgument('action', 'string', 'Target action');
-			$this->registerArgument('arguments', 'array', 'Arguments', FALSE, []);
-			$this->registerArgument('controller', 'string', 'Target controller');
-			$this->registerArgument('extensionName', 'string', 'Target Extension Name (without "tx_" prefix and no underscores). If NULL the current extension name is used');
-			$this->registerArgument('pluginName', 'string', 'Target plugin. If empty, the current plugin name is used');
-			$this->registerArgument('pageUid', 'int', 'Target page uid');
-			$this->registerArgument('object', 'mixed', 'Object to use for the form. Use in conjunction with the "property" attribute on the sub tags');
-			$this->registerArgument('pageType', 'int', 'Target page type', FALSE, 0);
-			$this->registerArgument('noCache', 'bool', 'set this to disable caching for the target page. You should not need this.', FALSE, FALSE);
-			$this->registerArgument('noCacheHash', 'bool', 'set this to suppress the cHash query parameter created by TypoLink. You should not need this.', FALSE, FALSE);
-			$this->registerArgument('section', 'string', 'The anchor to be added to the action URI (only active if $actionUri is not set)', FALSE, '');
-			$this->registerArgument('format', 'string', 'The requested format (e.g. ".html") of the target page (only active if $actionUri is not set)', FALSE, '');
-			$this->registerArgument('additionalParams', 'array',
-				'additional action URI query parameters that won\'t be prefixed like $arguments (overrule $arguments) (only active if $actionUri is not set)', FALSE, []);
-			$this->registerArgument('absolute', 'bool', 'If set, an absolute action URI is rendered (only active if $actionUri is not set)', FALSE, FALSE);
-			$this->registerArgument('addQueryString', 'bool', 'If set, the current query parameters will be kept in the action URI (only active if $actionUri is not set)', FALSE, FALSE);
-			$this->registerArgument('argumentsToBeExcludedFromQueryString', 'array', 'arguments to be removed from the action URI. Only active if $addQueryString = TRUE and $actionUri is not set', FALSE, []);
-			$this->registerArgument('addQueryStringMethod', 'string', 'Method to use when keeping query parameters (GET or POST, only active if $actionUri is not set', FALSE, 'GET');
-			$this->registerArgument('fieldNamePrefix', 'string', 'Prefix that will be added to all field names within this form. If not set the prefix will be tx_yourExtension_plugin');
-			$this->registerArgument('actionUri', 'string', 'can be used to overwrite the "action" attribute of the form tag');
-			$this->registerArgument('objectName', 'string',
-				'name of the object that is bound to this form. If this argument is not specified, the name attribute of this form is used to determine the FormObjectName');
-			$this->registerArgument('hiddenFieldClassName', 'string', 'hiddenFieldClassName');
-			$this->registerTagAttribute('target', 'string', 'Target attribute of the form');
-			$this->registerTagAttribute('novalidate', 'bool', 'Indicate that the form is not to be validated on submit.');
-		}
 		$this->registerArgument('resultTarget', 'string', 'Target where the results will be loaded');
 		$this->registerArgument('loaders', 'string', 'Target where the loader will be shown');
 	}

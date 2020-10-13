@@ -1,5 +1,9 @@
 <?php
+
 namespace EssentialDots\ExtbaseHijax\Property\TypeConverter;
+
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface;
 
 /***************************************************************
  *  Copyright notice
@@ -38,17 +42,14 @@ class ObjectStorageConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\O
 	protected $objectStorageMappingService;
 
 	/**
-	 * Actually convert from $source to $targetType, taking into account the fully
-	 * built $convertedChildProperties and $configuration.
-	 *
 	 * @param mixed $source
 	 * @param string $targetType
 	 * @param array $convertedChildProperties
-	 * @param \TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface $configuration
-	 * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage
-	 * @api
+	 * @param PropertyMappingConfigurationInterface|null $configuration
+	 * @return ObjectStorage
 	 */
-	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), \TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface $configuration = NULL) {
+	// @codingStandardsIgnoreStart
+	public function convertFrom($source, string $targetType, array $convertedChildProperties = [], PropertyMappingConfigurationInterface $configuration = NULL): ObjectStorage {
 		$objectStorage = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
 		foreach ($convertedChildProperties as $subPropertyKey => $subProperty) {
 			$objectStorage->attach($subProperty);
@@ -56,4 +57,5 @@ class ObjectStorageConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\O
 		}
 		return $objectStorage;
 	}
+	// @codingStandardsIgnoreEnd
 }

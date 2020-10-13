@@ -60,12 +60,7 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		if (version_compare(TYPO3_version, '8.3', '<')) {
-			$this->registerArgument('arguments', 'array', 'Arguments', FALSE, []);
-			$this->registerArgument('ajax', 'bool', 'TRUE if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
-		} else {
-			$this->overrideArgument('ajax', 'bool', 'TRUE if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
-		}
+		$this->overrideArgument('ajax', 'bool', 'TRUE if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
 		$this->registerArgument('contextArguments', 'array', 'Context arguments', FALSE, []);
 		$this->registerArgument('cachedAjaxIfPossible', 'bool', 'if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, TRUE);
 		$this->registerArgument('forceContext', 'bool', 'if the URI should be to an AJAX widget, FALSE otherwise.', FALSE, FALSE);
@@ -158,15 +153,13 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper 
 		$requestArguments = array_merge($requestArguments, $contextArguments);
 		$requestArguments[$widgetContext->getWidgetIdentifier()] = ($arguments && is_array($arguments)) ? $arguments : array();
 
-		if (version_compare(TYPO3_version, '6.1.0', '>=')) {
-			$variableContainer = $widgetContext->getViewHelperChildNodeRenderingContext()->getViewHelperVariableContainer();
-			if ($variableContainer->exists('TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper', 'formFieldNames')) {
-				$formFieldNames = $variableContainer->get('TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper', 'formFieldNames');
-				$mvcPropertyMappingConfigurationService = GeneralUtility::makeInstance(ObjectManager::class)->get('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\MvcPropertyMappingConfigurationService');
-				/* @var $mvcPropertyMappingConfigurationService \TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService */
-				$requestHash = $mvcPropertyMappingConfigurationService->generateTrustedPropertiesToken($formFieldNames, $pluginNamespace);
-				$requestArguments['__trustedProperties'] = $requestHash;
-			}
+		$variableContainer = $widgetContext->getViewHelperChildNodeRenderingContext()->getViewHelperVariableContainer();
+		if ($variableContainer->exists('TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper', 'formFieldNames')) {
+			$formFieldNames = $variableContainer->get('TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper', 'formFieldNames');
+			$mvcPropertyMappingConfigurationService = GeneralUtility::makeInstance(ObjectManager::class)->get('TYPO3\\CMS\\Extbase\\Mvc\\Controller\\MvcPropertyMappingConfigurationService');
+			/* @var $mvcPropertyMappingConfigurationService \TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService */
+			$requestHash = $mvcPropertyMappingConfigurationService->generateTrustedPropertiesToken($formFieldNames, $pluginNamespace);
+			$requestArguments['__trustedProperties'] = $requestHash;
 		}
 
 		if ($ajax) {

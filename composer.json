@@ -3,7 +3,7 @@
     "description": "Extbase Hijax add-on",
     "require": {
         "php": ">=7.2.0",
-        "typo3\/cms-core": "^9.5",
+        "typo3\/cms-core": "^10",
         "friendsoftypo3\/typo3db-legacy": "^1",
         "ext-sysvsem": "*",
         "ext-posix": "*",
@@ -30,5 +30,5 @@
             "EssentialDots\\ExtbaseHijax\\": "Classes"
         }
     },
-    "version": "4.0.4-dev"
+    "version": "5.0.0-dev"
 }
