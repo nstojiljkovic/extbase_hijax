@@ -1,3 +1,14 @@
+Version: 5.0.1
+Subject: [BUGFIX] Bring back broken ObjectStorageConverter
+Date:    2021-07-28 21:40:04 +0200
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=448afa2312f6fda3a863c28d19391397a1bb1d09
+
+Change-Id: I62d3ecb9d50fee97a7ac894160552675af980716
+Related: #TP-5320
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/6594
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+Reviewed-by: Nikola Stojiljković <nikola.stojiljkovic@essentialdots.com>
+
 Version: 5.0.0
 Subject: [TASK] Update compatibility to TYPO3 10 LTS
 Date:    2020-10-15 09:14:47 +0200
