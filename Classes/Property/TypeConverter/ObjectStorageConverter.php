@@ -2,6 +2,8 @@
 
 namespace EssentialDots\ExtbaseHijax\Property\TypeConverter;
 
+use EssentialDots\ExtbaseHijax\Property\TypeConverterService\ObjectStorageMappingService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface;
 
@@ -36,12 +38,6 @@ use TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface;
 class ObjectStorageConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter {
 
 	/**
-	 * @var \EssentialDots\ExtbaseHijax\Property\TypeConverterService\ObjectStorageMappingService
-	 * @TYPO3\CMS\Extbase\Annotation\Inject
-	 */
-	protected $objectStorageMappingService;
-
-	/**
 	 * @param mixed $source
 	 * @param string $targetType
 	 * @param array $convertedChildProperties
@@ -51,9 +47,11 @@ class ObjectStorageConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\O
 	// @codingStandardsIgnoreStart
 	public function convertFrom($source, string $targetType, array $convertedChildProperties = [], PropertyMappingConfigurationInterface $configuration = NULL): ObjectStorage {
 		$objectStorage = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+		/** @var ObjectStorageMappingService $objectManager */
+		$objectStorageMappingService = GeneralUtility::makeInstance(ObjectStorageMappingService::class);
 		foreach ($convertedChildProperties as $subPropertyKey => $subProperty) {
 			$objectStorage->attach($subProperty);
-			$this->objectStorageMappingService->mapSplObjectHashToSourceKey(spl_object_hash($subProperty), $subPropertyKey);
+			$objectStorageMappingService->mapSplObjectHashToSourceKey(spl_object_hash($subProperty), $subPropertyKey);
 		}
 		return $objectStorage;
 	}

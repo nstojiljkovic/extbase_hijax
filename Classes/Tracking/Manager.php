@@ -37,8 +37,8 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface, \Psr\Log\LoggerAwar
 
 	use LoggerAwareTrait;
 
-	const SIGNAL_PreTrackRepositoryOnPage = 'preTrackRepositoryOnPage';
-	const SIGNAL_PreTrackObjectOnPage = 'preTrackObjectOnPage';
+	const SIGNAL_PRE_TRACK_REPOSITORY_ON_PAGE = 'preTrackRepositoryOnPage';
+	const SIGNAL_PRE_TRACK_OBJECT_ON_PAGE = 'preTrackObjectOnPage';
 
 	/**
 	 * @var \EssentialDots\ExtbaseHijax\Cache\PageCacheFacade
@@ -204,7 +204,7 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface, \Psr\Log\LoggerAwar
 	 */
 	public function trackRepositoryOnPage($object = NULL, $type = 'hash', $hash = FALSE) {
 		if ($object && !$this->ajaxDispatcher->getIsActive()) {
-			$this->signalSlotDispatcher->dispatch(__CLASS__, self::SIGNAL_PreTrackRepositoryOnPage, array('object' => $object, 'type' => $type, 'hash' => $hash));
+			$this->signalSlotDispatcher->dispatch(__CLASS__, self::SIGNAL_PRE_TRACK_REPOSITORY_ON_PAGE, array('object' => $object, 'type' => $type, 'hash' => $hash));
 
 			if ($type) {
 				switch ($type) {
@@ -293,7 +293,7 @@ class Manager implements \TYPO3\CMS\Core\SingletonInterface, \Psr\Log\LoggerAwar
 	public function trackObjectOnPage(\TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject $object = NULL, $type = 'hash', $hash = FALSE) {
 
 		if ($object && !$this->ajaxDispatcher->getIsActive()) {
-			$this->signalSlotDispatcher->dispatch(__CLASS__, self::SIGNAL_PreTrackObjectOnPage, array('object' => $object, 'type' => $type, 'hash' => $hash));
+			$this->signalSlotDispatcher->dispatch(__CLASS__, self::SIGNAL_PRE_TRACK_OBJECT_ON_PAGE, array('object' => $object, 'type' => $type, 'hash' => $hash));
 
 			if ($type) {
 				switch ($type) {
