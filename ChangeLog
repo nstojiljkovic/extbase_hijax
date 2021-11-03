@@ -1,3 +1,14 @@
+Version: 5.0.2
+Subject: [TASK] Allow installing of development version of typo3db-legacy extension
+Date:    2021-11-03 18:29:47 +0000
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=a5af821f512aba46cde43cac123facc71ab7e8de
+
+Change-Id: I102532be3ecc16672574d8a76f3994e3b4d1404e
+Related: #TP-5374
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/6825
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+Reviewed-by: Nikola Stojiljkovic <nikola.stojiljkovic@essentialdots.com>
+
 Version: 5.0.1
 Subject: [BUGFIX] Bring back broken ObjectStorageConverter
 Date:    2021-07-28 21:40:04 +0200
