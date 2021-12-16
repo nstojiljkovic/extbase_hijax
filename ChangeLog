@@ -1,3 +1,14 @@
+Version: 5.0.3
+Subject: [TASK] Configure dev as minimum stability for dependencies
+Date:    2021-12-16 16:58:19 +0000
+Gitweb:  https://gerrit.essentialdots.com/gitweb?p=TYPO3CMS/Extensions/extbase_hijax.git;a=commit;h=f2f0002c33699ddb742672a59578bd91344e9bef
+
+Change-Id: I17b9fb5aa2cb5d11a0dfe64d83927b939bb893a4
+Related: #5374
+Reviewed-on: https://gerrit.essentialdots.com/c/TYPO3CMS/Extensions/extbase_hijax/+/6899
+Reviewed-by: Nikola Stojiljkovic <nikola.stojiljkovic@essentialdots.com>
+Tested-by: Mr. Jenkins <jenkins@essentialdots.com>
+
 Version: 5.0.2
 Subject: [TASK] Allow installing of development version of typo3db-legacy extension
 Date:    2021-11-03 18:29:47 +0000
